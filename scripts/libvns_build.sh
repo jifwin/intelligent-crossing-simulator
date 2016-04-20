@@ -1,0 +1,1 @@
+cd ../libvns && qmake && make clean && make && sudo make install
