@@ -3,6 +3,10 @@ project(intelligent_crossing_simulator)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
+include_directories(
+        libvns/sources/
+)
+
 link_libraries(
         vns
         vns-ns3
