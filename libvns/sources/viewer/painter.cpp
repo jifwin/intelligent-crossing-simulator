@@ -291,7 +291,7 @@ void Painter::drawNumbersOfJunctionExitLanes(SceneViewer* w, const Junction* jun
 }
 
 
-void Painter::drawVehicle(SceneViewer*, const Vehicle* vehicle, uint8 lod){
+void Painter::drawVehicle(SceneViewer* viewer, const Vehicle* vehicle, uint8 lod){
 	glColor3f(1, 1, 1);
 	//if (vehicle->state == VehicleStoped)
 	//	return;
@@ -357,8 +357,12 @@ void Painter::drawVehicle(SceneViewer*, const Vehicle* vehicle, uint8 lod){
 		drawCircularPoint(-vehicle->getLength()*0.45, -vehicle->getWidth()*0.3,0.15);
 	}
 
-	glPopMatrix();
+	glColor3f(0.0f, 0.0f, 1.0f);
+	viewer->renderText(-vehicle->getLength()*0.45, vehicle->getWidth()*0.3,0,QString("id: %1").arg(vehicle->getID()));
+	viewer->renderText(-vehicle->getLength()*0.45, vehicle->getWidth()*0.3+2.5,0,QString("speed: %1").arg(vehicle->getSpeed()));
+	viewer->renderText(-vehicle->getLength()*0.45, vehicle->getWidth()*0.3+5,0,QString("accel: %1").arg(vehicle->getAccel()));
 
+	glPopMatrix();
 
 /*
 	if(vehicle->state == Vehicle::ChangingLane){
