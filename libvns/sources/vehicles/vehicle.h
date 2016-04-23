@@ -198,6 +198,8 @@ protected:
     virtual float acc_movingInJunction(Simulator* sim);
     virtual float acc_changingWay(Simulator* sim);
 
+	float acc_smart(Simulator* sim);
+
     void crossToRoad(Simulator* sim,Lane* nextLane);
     void changeWay(Simulator* sim,Lane* nextLane);
     void changeToLane(Simulator* sim,Lane* destLane);

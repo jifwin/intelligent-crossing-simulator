@@ -413,9 +413,24 @@ float Vehicle::acc_enteringParking(Simulator* sim){
 	return model->accel( this );
 }
 
+
 float Vehicle::acc_movingInLane(Simulator* sim){
+
+	//todo: based on distance and current speed adjust acceleration?
+
+	float laneEndTmp = lane->getLaneEnd();
+
 	float stopPos = vns::MAX_FLOAT;
 	float fpos = getFrontPosition();
+
+	float distanceToCrossing = abs(fpos-laneEndTmp);
+
+	float timeToChangeLights =(getID() % 5) + 10; //todo: rnd
+
+	int recommendedSpeed = distanceToCrossing/timeToChangeLights;
+	float recommendedAccel = (recommendedSpeed-speed)/timeToChangeLights;
+
+	return recommendedAccel;
 
 	if( currentLaneDecision == DriverModel::MandatoryChangeToRight || currentLaneDecision == DriverModel::MandatoryChangeToLeft ){
 		//stopPos = lane->getLaneEnd()-JUNCTION_LOOKUP;
@@ -424,6 +439,7 @@ float Vehicle::acc_movingInLane(Simulator* sim){
 		stopPos = stops.getPosition();
 	}
 
+	//todo: rozkminic
 	if( next ){
 		junctionEnteringTime = sim->getSimulationTime();
 		if( stopPos < next->getRearPosition() ){
@@ -446,6 +462,7 @@ float Vehicle::acc_movingInLane(Simulator* sim){
 		// Approching junction
 		Junction* junction = lane->getEndJunction();
 		if( junction ){
+			//todo: rokzminic accel to junctin czy potrzebne?
 			return accelToJunction( sim, junction );
 		}
 	}
@@ -480,6 +497,7 @@ float Vehicle::acc_stoppedInLane(Simulator* sim){
 }
 
 float Vehicle::acc_movingInJunction(Simulator* sim) {
+	return accel; //todo: temporarily return previous accel
 	float acc;
 	if( next ){
 		acc = model->accel( this , next );
@@ -528,6 +546,8 @@ float Vehicle::acc_changingWay(Simulator* sim) {
 	return model->accel( this );
 }
 
+
+	//TODO!!!
 float Vehicle::accelToJunction(Simulator* , Junction* junction){
 	/*if(next && next->type==Object::GhostT){
 		if(getSpeed()<3.0 && next->getSpeed()<3.0 && getFrontPosition()<lane->getLaneEnd()){
@@ -1204,6 +1224,7 @@ float Vehicle::getAccelToEnd() const {
 	return model->accel( this, end );
 }
 
+	//todo:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! PILNE
 float Vehicle::getAccelToCross() const {
 	/*Vehicle* v = lane->exitVehicle;
 	if(v){
