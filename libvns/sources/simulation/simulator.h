@@ -74,6 +74,7 @@ protected:
     VehicleFactory* vehicleFactory;
     ModulesFactory* modulesFactory;
     NetworkModule* networkModule;
+	SmartNetworkModule* smartNetworkModule;
     TrafficGenerationModel* trafficGenerationModel;
     EventScheduler* scheduler;
 

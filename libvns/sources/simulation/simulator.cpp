@@ -113,6 +113,11 @@ void Simulator::setNetworkModule(NetworkModule* netmodule){
 	networkModule = netmodule;
 }
 
+	void Simulator::setSmartNetworkModule(SmartNetworkModule* smartNetworkModule) {
+		//todo: assercja
+		this.smartNetworkModule = smartNetworkModule; //todo
+	}
+
 void Simulator::setVehicleFactory(VehicleFactory* factory){
 	VNS_ASSERT( factory != 0 ,"Simulator::setVehicleFactory","Null instance!");
 	vehicleFactory = factory;
@@ -133,6 +138,8 @@ void Simulator::setTrafficGenerationModel(TrafficGenerationModel* model){
 
 void Simulator::simulationStep() {
 
+	//todo: spr czy gdzie sjest wolane
+	smartNetworkModule->step();
 
 }
 
@@ -156,7 +163,7 @@ void Simulator::addVehicle(Vehicle *vehicle, Lane* lane, double position){
 
     if(modulesFactory) modulesFactory->installModules(vehicle);
     if(networkModule) networkModule->onVehicleCreated(this,vehicle);
-//	if(smartNetworkModule) smartNetworkModule->onVehicleCreated(this, vehicle);
+	if(smartNetworkModule) smartNetworkModule->onVehicleCreated(this, vehicle);
 }
 
 void Simulator::addObjectToLane(LaneObject *obj, Lane* lane, double position) {
