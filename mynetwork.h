@@ -18,20 +18,20 @@ public:
 	virtual ~MyNetwork();
 
 protected:
-//	void scheduleTx(vns::Vehicle* vehicle);
-//	void onInitialize(const vns::Simulator*,vns::Vehicle*);
-	void onDataReceived(vns::TrafficLightController*,vns::Vehicle*, void*);
+	void scheduleTx(vns::Vehicle* vehicle);
+	void onInitialize(const vns::Simulator*,vns::Vehicle*);
+	void onDataReceived(vns::Vehicle*,vns::Vehicle*, void*);
 	void onSendFinish(void* data);
 
-	void onInitialize(const vns::Simulator *sim, vns::Vehicle *vehicle,
-                      vns::TrafficLightController *trafficLightController);
-
-	void scheduleTx(vns::TrafficLightController *trafficLightController);
-	void send(vns::TrafficLightController *trafficLightController, void* data);
-
-	void onDataReceived(vns::Vehicle *sender, vns::Vehicle *receiver, void *data);
-
-	void sendTest(vns::TrafficLightController* pController, void* pData);
+//	void onInitialize(const vns::Simulator *sim, vns::Vehicle *vehicle,
+//                      vns::TrafficLightController *trafficLightController);
+//
+//	void scheduleTx(vns::TrafficLightController *trafficLightController);
+//	void send(vns::TrafficLightController *trafficLightController, void* data);
+//
+//	void onDataReceived(vns::Vehicle *sender, vns::Vehicle *receiver, void *data);
+//
+//	void sendTest(vns::TrafficLightController* pController, void* pData);
 };
 
 #endif

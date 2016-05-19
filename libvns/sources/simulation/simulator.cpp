@@ -156,6 +156,7 @@ void Simulator::addVehicle(Vehicle *vehicle, Lane* lane, double position){
 
     if(modulesFactory) modulesFactory->installModules(vehicle);
     if(networkModule) networkModule->onVehicleCreated(this,vehicle);
+//	if(smartNetworkModule) smartNetworkModule->onVehicleCreated(this, vehicle);
 }
 
 void Simulator::addObjectToLane(LaneObject *obj, Lane* lane, double position) {
