@@ -32,6 +32,8 @@ namespace vns {
 
             vns::Vector<Junction*> junctions = roadNetwork->getAllJunctions();
             //todo: iterate over junctions
+            Junction* firstJunction = junctions.at(5);
+            Vec position = firstJunction->getPosition(); //todo: this is how to get vector of junction position
 
             int debug = 1;
             //todo: iterator
