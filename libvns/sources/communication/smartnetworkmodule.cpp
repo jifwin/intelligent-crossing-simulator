@@ -13,7 +13,7 @@ namespace vns {
         //todo: list of crossings
 
     public:
-        void onVehicleCreated(Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
+        void onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
             vehicles.append(vehicle);
         }
         void send(TrafficLightController * sender, Vehicle * receiver, String data) { //todo: another clasls for wrapped data

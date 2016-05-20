@@ -14,7 +14,7 @@ namespace vns {
         //todo: list of crossings
 
     public:
-        void onVehicleCreated(Vehicle * vehicle);
+        void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
         void send(TrafficLightController * sender, std::string data);
         void step();
 
