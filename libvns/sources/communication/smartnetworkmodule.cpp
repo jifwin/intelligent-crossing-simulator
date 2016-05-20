@@ -6,7 +6,7 @@
 
 
 namespace vns {
-    class smartnetworkmodule {
+    class SmartNetworkModule {
 
     private:
         List<Vehicle *> vehicles;

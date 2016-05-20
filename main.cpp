@@ -2,6 +2,9 @@
 #include "myvehicle.h"
 #include "connectionspainter.h"
 #include <vns/vns.h>
+#include "libvns/sources/communication/smartnetworkmodule.h"
+#include "libvns/sources/simulation/simulator.h"
+
 
 int main(int argc, char* argv[]) {
 
@@ -18,8 +21,7 @@ int main(int argc, char* argv[]) {
     	gen.generateTrafficLights(network);
 
 	vns::Routes* routes = man.createRoutes(network,1.0,2.0,vns::CAR);
-
-	vns::Simulator* simulator = new vns::Simulator();
+    vns::Simulator* simulator = new vns::Simulator();
 	simulator->setRoadNetwork( network );
 
 	simulator->setTrafficGenerationModel( new vns::TrafficGenerationModel(routes) );
@@ -34,7 +36,7 @@ int main(int argc, char* argv[]) {
 	MyNetwork* mynetwork = new MyNetwork();
 	mynetwork->setCommunicationRange(250);
 	networkModule->setNetwork( mynetwork );
-	simulator->setNetworkModule( networkModule ) //todo: to be removed
+	//simulator->setNetworkModule( networkModule );//todo: to be removed
 	simulator->setSmartNetworkModule(new vns::SmartNetworkModule());
 
 	if(gui){

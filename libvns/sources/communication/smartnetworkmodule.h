@@ -4,9 +4,10 @@
 
 #ifndef INTELLIGENT_CROSSING_SIMULATOR_SMARTNETWORKMODULE_H //todo: change
 #define INTELLIGENT_CROSSING_SIMULATOR_SMARTNETWORKMODULE_H
+#include "string.h"
 
 namespace vns {
-    class smartnetworkmodule {
+    class SmartNetworkModule {
 
     private:
             List<Vehicle *> vehicles;
@@ -14,7 +15,8 @@ namespace vns {
 
     public:
         void onVehicleCreated(Vehicle * vehicle);
-        void send(TrafficLightController * sender, String data);
+        void send(TrafficLightController * sender, std::string data);
+        void step();
 
     };
 }

@@ -19,6 +19,7 @@
 #include "networkmodule.h"
 #include "vehiclefactory.h"
 #include "modulesfactory.h"
+#include "smartnetworkmodule.h"
 #include "observer.h"
 #include "trafficgenerationmodel.h"
 #include "astarhandler.h"
@@ -108,6 +109,7 @@ public:
     void setModulesFactory(ModulesFactory* factory);
     void setTrafficGenerationModel(TrafficGenerationModel* model);
     void setNetworkModule(NetworkModule* module);
+	void setSmartNetworkModule(SmartNetworkModule* smartNetworkModule);
     inline const VehicleFactory* getVehicleFactory() const { return vehicleFactory; };
     inline EventScheduler* getEventScheduler(){ return scheduler; };
 

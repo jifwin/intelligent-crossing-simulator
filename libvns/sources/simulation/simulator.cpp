@@ -31,6 +31,7 @@ Simulator::Simulator() {
     vehicleFactory = 0;
     modulesFactory = 0;
     networkModule = 0;
+    smartNetworkModule = 0;
 	trafficGenerationModel = 0;
 
     astarfunction = new TravelTimeFunction();
@@ -113,10 +114,10 @@ void Simulator::setNetworkModule(NetworkModule* netmodule){
 	networkModule = netmodule;
 }
 
-	void Simulator::setSmartNetworkModule(SmartNetworkModule* smartNetworkModule) {
-		//todo: assercja
-		this.smartNetworkModule = smartNetworkModule; //todo
-	}
+void Simulator::setSmartNetworkModule(SmartNetworkModule* smartNetworkModule) {
+    VNS_ASSERT( smartNetworkModule != 0 ,"Simulator::setSmartNetworkModule","Null instance!");//todo: assercja
+    smartNetworkModule = smartNetworkModule; //todo
+}
 
 void Simulator::setVehicleFactory(VehicleFactory* factory){
 	VNS_ASSERT( factory != 0 ,"Simulator::setVehicleFactory","Null instance!");
