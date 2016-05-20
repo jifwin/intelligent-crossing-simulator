@@ -116,7 +116,7 @@ void Simulator::setNetworkModule(NetworkModule* netmodule){
 
 void Simulator::setSmartNetworkModule(SmartNetworkModule* smartNetworkModule) {
     VNS_ASSERT( smartNetworkModule != 0 ,"Simulator::setSmartNetworkModule","Null instance!");//todo: assercja
-    smartNetworkModule = smartNetworkModule; //todo
+    this->smartNetworkModule = smartNetworkModule; //todo
 }
 
 void Simulator::setVehicleFactory(VehicleFactory* factory){

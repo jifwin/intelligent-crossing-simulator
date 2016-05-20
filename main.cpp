@@ -32,10 +32,10 @@ int main(int argc, char* argv[]) {
 	networkModule->setNetwork( net );
 	simulator->setNetworkModule( networkModule );*/
 
-	vns::SimpleNetworkModule* networkModule = new vns::SimpleNetworkModule();
-	MyNetwork* mynetwork = new MyNetwork();
-	mynetwork->setCommunicationRange(250);
-	networkModule->setNetwork( mynetwork );
+//	vns::SimpleNetworkModule* networkModule = new vns::SimpleNetworkModule();
+//	MyNetwork* mynetwork = new MyNetwork();
+//	mynetwork->setCommunicationRange(250);
+//	networkModule->setNetwork( mynetwork );
 	//simulator->setNetworkModule( networkModule );//todo: to be removed
 	simulator->setSmartNetworkModule(new vns::SmartNetworkModule());
 
