@@ -23,7 +23,7 @@ namespace vns {
     public:
         void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
         void send(TrafficLightController * sender, Vehicle * receiver, std::string data);
-        void step();
+        void onSimulationStep(Simulator* sim);
 
     };
 }

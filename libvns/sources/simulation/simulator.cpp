@@ -138,10 +138,6 @@ void Simulator::setTrafficGenerationModel(TrafficGenerationModel* model){
 }
 
 void Simulator::simulationStep() {
-
-	//todo: spr czy gdzie sjest wolane
-	smartNetworkModule->step();
-
 }
 
 void Simulator::addVehicle(Vehicle *vehicle, Lane* lane, double position){
@@ -244,6 +240,9 @@ void Simulator::step(){
 	    if(networkModule){
 	    	networkModule->onSimulationStep(this);
 	    }
+		if(smartNetworkModule){
+			smartNetworkModule->onSimulationStep(this);
+		}
 		for(vns::List<Observer*>::Iterator obs=observers.begin();obs!=observers.end();obs++){ (*obs)->onSimulationStep(this); }
 		//stepExcutionTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
 	}

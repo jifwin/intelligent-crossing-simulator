@@ -27,10 +27,15 @@ namespace vns {
             }
             //todo: schedule
         }
-        void SmartNetworkModule::step() {
-          /*  junctions.foreach:
-                vehicles.rforeach:
-                    czy sa w zasiegu, jesli tak send()*/
+        void SmartNetworkModule::onSimulationStep(Simulator *sim) {
+            //todo: foreach junction
+            //todo: foreach vehicle
+            //todo: check range and send
+
+            int debug = 1;
+            //todo: iterator
+            Vehicle * vehicle = vehicles.front();
+
         }
 
 }
