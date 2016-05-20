@@ -19,24 +19,18 @@ namespace vns {
 
             //SmartData data = new SmartData(position, czas, cos co);
             //receiver.setNewData(data);
-
-            //todo: in vehicle.setNewData
-            {
-                //todo: sets local field with new data and apply acceleration based on that data
-
-            }
-            //todo: schedule
+            receiver->receiveSmartData(data);
         }
         void SmartNetworkModule::onSimulationStep(Simulator *sim) {
             //todo: foreach junction
             //todo: foreach vehicle
             //todo: check range and send
-
+            //todo: extract junctions from simulator?
             int debug = 1;
             //todo: iterator
             Vehicle * vehicle = vehicles.front(); //todo: tepmorarly, use send function to call for each vehicle
             std::string smartData = "smart data content"; //todo: create seperate class for wrapping a lot of lights data
-            vehicle->receiveSmartData(smartData);
+            send(NULL, vehicle, smartData);
         }
 
 }
