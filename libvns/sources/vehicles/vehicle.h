@@ -109,6 +109,7 @@ private:
     void* networkNode;
     DriverModel::LaneChangeDecision currentLaneDecision;
 	float laneStopPosition;
+	std::string smartData;
 
 public:
 
@@ -157,6 +158,8 @@ public:
     bool updatePath(Path* path);
 
     static Vehicle* fromObject(Object*);
+
+	void receiveSmartData(std::string smartData);
 
 protected:
     /*! \cond PRIVATE */

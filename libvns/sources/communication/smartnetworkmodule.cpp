@@ -34,8 +34,9 @@ namespace vns {
 
             int debug = 1;
             //todo: iterator
-            Vehicle * vehicle = vehicles.front();
-
+            Vehicle * vehicle = vehicles.front(); //todo: tepmorarly, use send function to call for each vehicle
+            std::string smartData = "smart data content"; //todo: create seperate class for wrapping a lot of lights data
+            vehicle->receiveSmartData(smartData);
         }
 
 }
