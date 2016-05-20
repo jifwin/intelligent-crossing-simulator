@@ -4,18 +4,25 @@
 
 #ifndef INTELLIGENT_CROSSING_SIMULATOR_SMARTNETWORKMODULE_H //todo: change
 #define INTELLIGENT_CROSSING_SIMULATOR_SMARTNETWORKMODULE_H
-#include "string.h"
+
+#include "core.h"
+#include "lock.h"
+#include "networkmodule.h"
+#include "hashtable.h"
+#include "trafficlightcontroller.h"
+#include <string>
+#include <list>
 
 namespace vns {
     class SmartNetworkModule {
 
     private:
-            List<Vehicle *> vehicles;
+            std::list<Vehicle *> vehicles;
         //todo: list of crossings
 
     public:
         void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
-        void send(TrafficLightController * sender, std::string data);
+        void send(TrafficLightController * sender, Vehicle * receiver, std::string data);
         void step();
 
     };

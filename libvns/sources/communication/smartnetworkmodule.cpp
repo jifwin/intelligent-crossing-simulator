@@ -3,25 +3,22 @@
 //
 
 #include "smartnetworkmodule.h"
-
+#include "simulator.h"
+#include "vehicle.h"
+#include <string>
+#include "trafficlightcontroller.h"
+#include <list>
 
 namespace vns {
-    class SmartNetworkModule {
-
-    private:
-        List<Vehicle *> vehicles;
-        //todo: list of crossings
-
-    public:
-        void onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
-            vehicles.append(vehicle);
+        void SmartNetworkModule::onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
+            vehicles.push_back(vehicle);
         }
-        void send(TrafficLightController * sender, Vehicle * receiver, String data) { //todo: another clasls for wrapped data
-            sender->getPosition();
-            sender->getNearestChange();//todo: etc
+        void SmartNetworkModule::send(TrafficLightController * sender, Vehicle * receiver, std::string data) { //todo: another clasls for wrapped data
+//            sender->getPosition(); //todo
+//            sender->getNearestChange();//todo: etc
 
-            SmartData data = new SmartData(position, czas, cos co);
-            receiver.setNewData(data);
+            //SmartData data = new SmartData(position, czas, cos co);
+            //receiver.setNewData(data);
 
             //todo: in vehicle.setNewData
             {
@@ -30,11 +27,10 @@ namespace vns {
             }
             //todo: schedule
         }
-        void step() {
-            junctions.foreach:
+        void SmartNetworkModule::step() {
+          /*  junctions.foreach:
                 vehicles.rforeach:
-                    czy sa w zasiegu, jesli tak send()
+                    czy sa w zasiegu, jesli tak send()*/
         }
 
-    };
 }
