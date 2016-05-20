@@ -720,6 +720,10 @@ Junction* RoadNetwork::getJunction(const Vec& p){
 	return 0;
 }
 
+	vns::Vector<Junction*> RoadNetwork::getAllJunctions() {
+		return junctions;
+	}
+
 bool RoadNetwork::hasJunction(const Vec& p){
 	return junctionsHash.contains(p);
 }

@@ -18,9 +18,11 @@ namespace vns {
 
     private:
             std::list<Vehicle *> vehicles;
+            RoadNetwork* roadNetwork;
         //todo: list of crossings
 
     public:
+        SmartNetworkModule(RoadNetwork* roadNetwork);
         void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
         void send(TrafficLightController * sender, Vehicle * receiver, std::string data);
         void onSimulationStep(Simulator* sim);

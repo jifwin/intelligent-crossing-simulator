@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 //	mynetwork->setCommunicationRange(250);
 //	networkModule->setNetwork( mynetwork );
 	//simulator->setNetworkModule( networkModule );//todo: to be removed
-	simulator->setSmartNetworkModule(new vns::SmartNetworkModule());
+	simulator->setSmartNetworkModule(new vns::SmartNetworkModule(network));
 
 	if(gui){
 		vns::Visualizer* viewer = new vns::Visualizer( simulator );

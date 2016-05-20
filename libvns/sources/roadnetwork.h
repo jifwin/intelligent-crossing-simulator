@@ -87,6 +87,7 @@ public:
     inline Junction* getJunction(int32 jid){ return junctions.at(jid); };
     inline const Junction* getJunction(int32 jid) const { return junctions.at(jid); };
     inline int32 getNumberOfJunctions() const { return junctions.size(); };
+    vns::Vector<Junction*> getAllJunctions();
 
     Road* createRoad(PolyLine* polyline, int32 forwardLanes=1, int32 reverseLanes=0);
     Road* createRoad(const Vector<Vec>& points, Road* road);

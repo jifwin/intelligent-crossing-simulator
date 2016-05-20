@@ -10,6 +10,10 @@
 #include <list>
 
 namespace vns {
+        SmartNetworkModule::SmartNetworkModule(RoadNetwork *roadNetwork) {
+            this->roadNetwork = roadNetwork;
+        }
+
         void SmartNetworkModule::onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
             vehicles.push_back(vehicle);
         }
@@ -25,7 +29,10 @@ namespace vns {
             //todo: foreach junction
             //todo: foreach vehicle
             //todo: check range and send
-            //todo: extract junctions from simulator?
+
+            vns::Vector<Junction*> junctions = roadNetwork->getAllJunctions();
+            //todo: iterate over junctions
+
             int debug = 1;
             //todo: iterator
             Vehicle * vehicle = vehicles.front(); //todo: tepmorarly, use send function to call for each vehicle
