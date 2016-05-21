@@ -23,6 +23,7 @@
 #include "trafficlightcontroller.h"
 #include "path.h"
 #include "vehiclemodule.h"
+#include "SmartData.h"
 
 namespace vns {
 
@@ -109,7 +110,7 @@ private:
     void* networkNode;
     DriverModel::LaneChangeDecision currentLaneDecision;
 	float laneStopPosition;
-	std::string smartData;
+	SmartData* smartData;
 
 public:
 
@@ -159,7 +160,7 @@ public:
 
     static Vehicle* fromObject(Object*);
 
-	void receiveSmartData(std::string smartData);
+	void receiveSmartData(SmartData* smartData);
 
 protected:
     /*! \cond PRIVATE */

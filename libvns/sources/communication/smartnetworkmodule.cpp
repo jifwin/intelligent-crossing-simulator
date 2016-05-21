@@ -5,6 +5,7 @@
 #include "smartnetworkmodule.h"
 #include "simulator.h"
 #include "vehicle.h"
+#include "SmartData.h"
 #include <string>
 #include "trafficlightcontroller.h"
 #include <list>
@@ -17,7 +18,7 @@ namespace vns {
         void SmartNetworkModule::onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
             vehicles.push_back(vehicle);
         }
-        void SmartNetworkModule::send(TrafficLightController * sender, Vehicle * receiver, std::string data) { //todo: another clasls for wrapped data
+        void SmartNetworkModule::send(TrafficLightController * sender, Vehicle * receiver, SmartData * data) {
 //            sender->getPosition(); //todo
 //            sender->getNearestChange();//todo: etc
 
@@ -38,7 +39,7 @@ namespace vns {
             int debug = 1;
             //todo: iterator
             Vehicle * vehicle = vehicles.front(); //todo: tepmorarly, use send function to call for each vehicle
-            std::string smartData = "smart data content"; //todo: create seperate class for wrapping a lot of lights data
+            SmartData* smartData = new SmartData(position, 5, 10);
             send(NULL, vehicle, smartData);
         }
 

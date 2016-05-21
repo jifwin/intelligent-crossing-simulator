@@ -9,6 +9,7 @@
 #include "lock.h"
 #include "networkmodule.h"
 #include "hashtable.h"
+#include "SmartData.h"
 #include "trafficlightcontroller.h"
 #include <string>
 #include <list>
@@ -24,7 +25,7 @@ namespace vns {
     public:
         SmartNetworkModule(RoadNetwork* roadNetwork);
         void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
-        void send(TrafficLightController * sender, Vehicle * receiver, std::string data);
+        void send(TrafficLightController * sender, Vehicle * receiver, SmartData * data);
         void onSimulationStep(Simulator* sim);
 
     };

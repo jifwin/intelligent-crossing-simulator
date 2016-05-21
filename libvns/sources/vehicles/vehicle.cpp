@@ -1271,7 +1271,7 @@ void Vehicle::runModules(const Simulator* sim){
 	}
 }
 
-void Vehicle::receiveSmartData(std::string smartData) {
+void Vehicle::receiveSmartData(SmartData * smartData) {
 	this->smartData = smartData;
 }
 
