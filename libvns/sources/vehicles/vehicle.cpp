@@ -18,6 +18,7 @@
 #include "roadnetwork.h"
 #include "trigger.h"
 #include "ghostvehicle.h"
+#include <iostream>
 
 #define OPTIONAL_LANE_THINKTIME 3.0
 #define LANE_CHANGE_GAP 2.0
@@ -72,7 +73,23 @@ Vehicle::~Vehicle(){
 	if(tmpPath){ delete tmpPath; }
 }
 
+void Vehicle::calculateFuelConsumption() { //todo: add to .h - DONE
+	lastFuelConsumption = getFuelConsumption(); //todo //todo: without delta_t
+	totalFuelConsumed += lastFuelConsumption*vns::DriverModel::DT; //todo: dodać delta_t
+	//printf("Vehicle %f consumed: %f", getID(), totalFuelConsumed); //todo: import lib, print vehicle id
+}
+
+	float Vehicle::getTotalFuelConsumption() const {
+		return totalFuelConsumed;
+	}
+
+float Vehicle::getFuelConsumption() const {
+	if (accel< 0.1)
+		return 0;
+	return (speed*speed*0.0077-speed*0.503+18.7008+speedConst+accel*9.8589+3.5642+accelConst);
+}
 void Vehicle::simulationStep( Simulator* sim ) {
+	calculateFuelConsumption();
     if(sim->time >= nextThinkTime){
     	nextThinkTime = sim->time + vns::DriverModel::DT;
     	(this->*checkFunction)( sim );
@@ -140,6 +157,7 @@ void Vehicle::initialize( Simulator* sim ) {
 	usingTrajectory = false;
 	invertWay = false;
 	laneToChange = 0;
+	totalFuelConsumed = 0;
     nextThinkTime = -1;
     optionalLaneChangeThinkTime = -1;
 

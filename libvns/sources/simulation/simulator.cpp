@@ -17,7 +17,7 @@
 
 namespace vns {
 
-double Simulator::DT = 0.033;
+double Simulator::DT = 0.033; //TODO: CHECK
 
 Simulator::Simulator() {
 	network = 0;
