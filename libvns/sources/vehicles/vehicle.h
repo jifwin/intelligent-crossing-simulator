@@ -46,6 +46,7 @@ public:
 	static const uint8 EnteringParking = 11;
 	static const float speedConst = 0;
 	static const float accelConst = 0;
+	static const float standbyFuelPerHour = 1.8;
 
 	float totalFuelConsumed;
 	float lastFuelConsumption;

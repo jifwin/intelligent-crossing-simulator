@@ -73,10 +73,12 @@ Vehicle::~Vehicle(){
 	if(tmpPath){ delete tmpPath; }
 }
 
-void Vehicle::calculateFuelConsumption() { //todo: add to .h - DONE
-	lastFuelConsumption = getFuelConsumption(); //todo //todo: without delta_t
-	totalFuelConsumed += lastFuelConsumption*vns::DriverModel::DT; //todo: dodać delta_t
-	//printf("Vehicle %f consumed: %f", getID(), totalFuelConsumed); //todo: import lib, print vehicle id
+void Vehicle::calculateFuelConsumption() {
+	if(getSpeed()>0.1)
+	lastFuelConsumption = (getFuelConsumption()/100000)*getSpeed()*vns::DriverModel::DT; //todo dzielić przez droge litr/100km /100km - ilość na metr
+	else
+		lastFuelConsumption = (standbyFuelPerHour/3600)*vns::DriverModel::DT; //paliwo na sekunde* ilość sekund?
+	totalFuelConsumed += lastFuelConsumption; //todo: czy na pewno razy ten czas?
 }
 
 	float Vehicle::getTotalFuelConsumption() const {
