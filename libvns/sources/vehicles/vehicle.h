@@ -161,6 +161,7 @@ public:
     static Vehicle* fromObject(Object*);
 
 	void receiveSmartData(SmartData* smartData);
+	Lane* getCurrentLane() { return lane; };
 
 protected:
     /*! \cond PRIVATE */

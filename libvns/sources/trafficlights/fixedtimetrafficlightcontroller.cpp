@@ -172,8 +172,14 @@ void FixedTimeTrafficLightController::initialize(Simulator* sim){
 		sim->getEventScheduler()->schedule(comuteTime,&FixedTimeTrafficLightController::update,this,sim);
 	}
 }
-
+//todo: o tu jest, na lane robi setTraffiCLightColor, wiec zrobmy wklasie lane pola oraz metody setNextLight, setTimeToNextChange
+//	todo: i potem z poziomu smartNetowrkModule robisz getTimeToNextChange, na klasie lane
+	//todo: trzeba tylko esie upewnic ze vehicle->GetCUrrentLane zwroci aktualna droge po ktorej jedzie auto, bo tego nie jestem pewny
 void FixedTimeTrafficLightController::update(Simulator* sim){
+		//todo: w sumie tu, bo chyba to sie odpala w kazdym okroku symulacji
+//		bedzeisz musiala z tablicy "state" jakos wyciagnac czas do nastepnego (to jest pewnie ilosc kroko)
+		//todo: states podgladniesz w debuggerze;) i tyle
+
 	currentState = (1 + currentState) % states.size();
 	TrafficLightState* state = states.at(currentState);
 	for( int8 i=0 ; i < state->getNumberOfLights() ; i++ ){
