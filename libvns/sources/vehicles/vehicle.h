@@ -207,6 +207,7 @@ protected:
     virtual float acc_leavingParking(Simulator* sim);
     virtual float acc_enteringParking(Simulator* sim);
     virtual float acc_movingInLane(Simulator* sim);
+	virtual float acc_movingInLaneSmart(Simulator* sim);
     virtual float acc_changingLane(Simulator* sim);
     virtual float acc_stoppedInLane(Simulator* sim);
     virtual float acc_movingInJunction(Simulator* sim);

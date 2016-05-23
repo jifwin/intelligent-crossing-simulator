@@ -18,7 +18,7 @@
 #include "roadnetwork.h"
 #include "trigger.h"
 #include "ghostvehicle.h"
-#include <iostream>
+#include "SmartData.h"
 #include <math.h>
 
 #define OPTIONAL_LANE_THINKTIME 3.0
@@ -206,7 +206,7 @@ void Vehicle::initialize( Simulator* sim ) {
         enterRoad( sim );
         state = Vehicle::MovingInLane;
     	stateFunction = &Vehicle::movingInLane;
-    	accelFunction = &Vehicle::acc_movingInLane;
+    	accelFunction = &Vehicle::acc_movingInLaneSmart;
     	checkFunction = &Vehicle::check_movingInLane;
     }
 }
@@ -376,7 +376,7 @@ void Vehicle::changingLane(Simulator* sim) {
         sim->removeObjectFromLane(ghost);
         state = Vehicle::MovingInLane;
 		stateFunction = &Vehicle::movingInLane;
-		accelFunction = &Vehicle::acc_movingInLane;
+		accelFunction = &Vehicle::acc_movingInLane; //todo: check
 		checkFunction = &Vehicle::check_movingInLane;
 		//movingInLane( sim );
     }
@@ -442,6 +442,26 @@ float Vehicle::acc_leavingParking(Simulator* sim){
 float Vehicle::acc_enteringParking(Simulator* sim){
 	/* vehicles entering a parking lane */
 	return model->accel( this );
+}
+
+float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
+	vns::Vec junctionPosition = smartData->getJunctionPosition();
+	float timeToGreen = smartData->getTimeToNextGreen();
+	float timeToRed = smartData->getTimeToNextRed();
+
+	double distanceToJunction = pos.distanceTo(junctionPosition);
+	float offset = 5;//todo: move
+	float accelOffset = 0; //todo: rethink
+
+	if(timeToGreen < timeToRed) {
+		float timeWithOffset = timeToGreen + offset;
+		float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
+		return requiredAccel < 0 ? requiredAccel : 0; //todo: rethink
+	}
+	else {
+		return acc_movingInLane(sim);
+		//todo:
+	}
 }
 
 float Vehicle::acc_movingInLane(Simulator* sim){

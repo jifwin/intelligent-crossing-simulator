@@ -17,6 +17,9 @@ namespace vns {
 
     public:
         SmartData(vns::Vec junctionPosition, float timeToNextGreen, float timeToNextRed);
+        vns::Vec getJunctionPosition() { return junctionPosition; }
+        float getTimeToNextGreen() { return timeToNextGreen; }
+        float getTimeToNextRed() { return timeToNextRed; }
     };
 }
 #endif //INTELLIGENT_CROSSING_SIMULATOR_SMARTDATA_H
