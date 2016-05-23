@@ -19,6 +19,7 @@
 #include "trigger.h"
 #include "ghostvehicle.h"
 #include <iostream>
+#include <math.h>
 
 #define OPTIONAL_LANE_THINKTIME 3.0
 #define LANE_CHANGE_GAP 2.0
@@ -75,10 +76,10 @@ Vehicle::~Vehicle(){
 
 void Vehicle::calculateFuelConsumption() {
 	if(getSpeed()>0.1)
-	lastFuelConsumption = (getFuelConsumption()/100000)*getSpeed()*vns::DriverModel::DT; //todo dzielić przez droge litr/100km /100km - ilość na metr
+	lastFuelConsumption = (getFuelConsumption()/100000)*getSpeed()*vns::DriverModel::DT;
 	else
-		lastFuelConsumption = (standbyFuelPerHour/3600)*vns::DriverModel::DT; //paliwo na sekunde* ilość sekund?
-	totalFuelConsumed += lastFuelConsumption; //todo: czy na pewno razy ten czas?
+		lastFuelConsumption = (standbyFuelPerHour/3600)*vns::DriverModel::DT; //paliwo na sekunde* ilość sekund
+	totalFuelConsumed += lastFuelConsumption;
 }
 
 	float Vehicle::getTotalFuelConsumption() const {
@@ -86,9 +87,19 @@ void Vehicle::calculateFuelConsumption() {
 	}
 
 float Vehicle::getFuelConsumption() const {
-	if (accel< 0.1)
+	float speedkmh = speed*3.6;
+	float fuelConsumptionBySpeed = (pow(speedkmh,4)*9.0428*pow(10,-8)+
+									pow(speedkmh,3)*(-4.256)*pow(10,-5)+
+									pow(speedkmh,2)*0.0077+
+									speedkmh*(-0.503)+
+									18.7008+speedConst);
+	float fuelConsumptionByAccel = accel*9.8589+3.5642+accelConst;
+	if (accel< -0.1)
 		return 0;
-	return (speed*speed*0.0077-speed*0.503+18.7008+speedConst+accel*9.8589+3.5642+accelConst);
+	else if (accel>=-0.1 && accel<=0.1)
+		return fuelConsumptionBySpeed;
+	else
+		return fuelConsumptionByAccel+fuelConsumptionBySpeed;
 }
 void Vehicle::simulationStep( Simulator* sim ) {
 	calculateFuelConsumption();
