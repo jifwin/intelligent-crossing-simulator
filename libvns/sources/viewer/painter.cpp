@@ -291,7 +291,7 @@ void Painter::drawNumbersOfJunctionExitLanes(SceneViewer* w, const Junction* jun
 }
 
 
-void Painter::drawVehicle(SceneViewer*, const Vehicle* vehicle, uint8 lod){
+void Painter::drawVehicle(SceneViewer* w, const Vehicle* vehicle, uint8 lod){
 	glColor3f(1, 1, 1);
 	//if (vehicle->state == VehicleStoped)
 	//	return;
@@ -338,7 +338,11 @@ void Painter::drawVehicle(SceneViewer*, const Vehicle* vehicle, uint8 lod){
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-
+	SmartData * smartData = vehicle->smartData;
+	if(smartData != NULL) {
+		w->renderText(0.0, 0.0, 0.0, QString("%1").arg(smartData->getTimeToNextGreen()));
+		w->renderText(0.0, 2.5, 0.0, QString("%1").arg(smartData->getTimeToNextRed()));
+	}
 	/*
 	if( vehicle->isRightBlinking() ){
 		glColor3f(1, 0.9, 0);

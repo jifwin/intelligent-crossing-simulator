@@ -184,6 +184,9 @@ void FixedTimeTrafficLightController::update(Simulator* sim){
 	TrafficLightState* state = states.at(currentState);
 	for( int8 i=0 ; i < state->getNumberOfLights() ; i++ ){
 		if(lanes[i]){
+			float dur = state->getDuration();
+			lanes[i]->setLightChangeTime(sim->getSimulationTime()+dur);
+			//todo: set duration
 			lanes[i]->setTrafficLightColor( state->getLight(i) );
 		}
 	}

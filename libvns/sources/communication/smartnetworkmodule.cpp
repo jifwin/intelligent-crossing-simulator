@@ -32,17 +32,24 @@ namespace vns {
             //todo: foreach junction
             //todo: foreach vehicle
             //todo: check range and send
+            float timeToNextRed = 0;
+            float timeToNextGreen = 0;
 
             vns::Vector<Junction*> junctions = roadNetwork->getAllJunctions();
             //todo: iterate over junctions
-            Junction* firstJunction = junctions.at(5);
+            Junction* firstJunction = junctions.at(0);
             Vec position = firstJunction->getPosition(); //todo: this is how to get vector of junction position
             int debug = 1;
             //todo: iterator
             Vehicle * vehicle = vehicles.front(); //todod: tepmorarly, use send function to call for each vehicle
 
-            Lane* currentCarLane = vehicle->getCurrentLane();
-//            currentCarLane->getTimeToNextChange(); //todo
+//            Lane* currentCarLane = vehicle->getCurrentLane();
+            Lane* currentCarLane = vehicle->getLane();
+            //todo: check if not 0
+            Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
+            float timeToChange = currentCarLane->getLightChangeTime();
+
+//            currentCarLane->getTimeToNextChange(); //tododdd
 
 
                     //notatka:
@@ -52,10 +59,24 @@ namespace vns {
 //            zaraz to znajde
 
 
-//            int timeToRed = 6;
-//            float endStopTime = sim->time + stops.getDuration();
-            SmartData* smartData = new SmartData(position, 5, 10);
-            send(NULL, vehicle, smartData);
+
+            if (currentLightColor==vns::RedLight){
+                timeToNextGreen = timeToChange + 5.0;
+                timeToNextRed = timeToNextGreen + 25.0;
+                SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+                send(NULL, vehicle, smartData);
+            }
+            else if (currentLightColor==vns::GreenLight) {
+                timeToNextRed = timeToChange + 5.0;
+                timeToNextGreen = timeToNextRed + 25.0;
+                SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+                send(NULL, vehicle, smartData);
+            }
+            else if(currentLightColor==vns::YellowLight) {
+
+            }
+            //SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+            //send(NULL, vehicle, smartData);
         }
 
 }

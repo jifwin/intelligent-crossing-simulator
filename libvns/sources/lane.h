@@ -102,6 +102,7 @@ private:
 
     vns::Lock mlock;
     Light lightColor;
+	float nextLightChangeTime;
     LaneSensor* laneSensors;
     void* userdata;
     LaneObject* first;
@@ -178,8 +179,12 @@ public:
     inline bool hasTrafficLight() const { return lightColor != NoLight; };
     inline Light getTrafficLightColor() const { return lightColor; };
     inline void setTrafficLightColor(Light color){ lightColor = color; };
+	inline void setLightChangeTime(float time) { this->nextLightChangeTime = time;}
+	inline float getLightChangeTime() { return this->nextLightChangeTime;}
     inline void setUserData(void* data){ userdata = data; };
     inline void* getUserData() const { return userdata; };
+	inline Light getNextTrafficLightColor() const { return lightColor; };
+	inline void setNextTrafficLightColor(Light color){ lightColor = color; };
 
     Junction* getStartJunction();
     const Junction* getStartJunction() const;

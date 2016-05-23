@@ -142,6 +142,7 @@ void Vehicle::initialize( Simulator* sim ) {
 	laneToChange = 0;
     nextThinkTime = -1;
     optionalLaneChangeThinkTime = -1;
+	smartData = NULL;
 
     if(lane->hasFlag(Lane::ParkingLane)){
     	/* entering from a parking lane */
