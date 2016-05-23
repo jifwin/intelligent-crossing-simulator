@@ -18,7 +18,7 @@ namespace vns {
         }
 
         void SmartNetworkModule::onVehicleCreated(Simulator* sim, Vehicle * vehicle){ //todo: called form simulator onVehicleCreated
-            vehicles.push_back(vehicle);
+            vehicles->insert(vehicle->getID(),vehicle);
         }
         void SmartNetworkModule::send(TrafficLightController * sender, Vehicle * receiver, SmartData * data) {
 //            sender->getPosition(); //todo
@@ -41,42 +41,43 @@ namespace vns {
             Vec position = firstJunction->getPosition(); //todo: this is how to get vector of junction position
             int debug = 1;
             //todo: iterator
-            Vehicle * vehicle = vehicles.front(); //todod: tepmorarly, use send function to call for each vehicle
 
-//            Lane* currentCarLane = vehicle->getCurrentLane();
-            Lane* currentCarLane = vehicle->getLane();
-            //todo: check if not 0
-            Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
-            float timeToChange = currentCarLane->getLightChangeTime();
+            vns::HashTable<uint64, Vehicle*>::Iterator it(vehicles);
+            while( it.isValid() ) {
+                //Vehicle * vehicle = vehicles.front(); //todod: tepmorarly, use send function to call for each vehicle
+                Vehicle* vehicle = it.value();
+                Lane *currentCarLane = vehicle->getLane();
+                //todo: check if not 0
+                Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
+                float timeToChange = currentCarLane->getLightChangeTime();
 
-//            currentCarLane->getTimeToNextChange(); //tododdd
 
-
-                    //notatka:
-//                    z tego co pamietam to traffic light controller USTAWIA na Lane obecne swiatlo
+                //notatka:
+//            z tego co pamietam to traffic light controller USTAWIA na Lane obecne swiatlo
 //            mozna by to rozszerzyc do czegos takiego ze ustawia obecne swiatlo
 //            oraz czasy do nastepnego siwatla itp
 //            zaraz to znajde
 
 
+                if (currentLightColor == vns::RedLight) {
+                    timeToNextGreen = timeToChange + 5.0;
+                    timeToNextRed = timeToNextGreen + 25.0;
+                    SmartData *smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+                    send(NULL, vehicle, smartData);
+                }
+                else if (currentLightColor == vns::GreenLight) {
+                    timeToNextRed = timeToChange + 5.0;
+                    timeToNextGreen = timeToNextRed + 25.0;
+                    SmartData *smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+                    send(NULL, vehicle, smartData);
+                }
+                else if (currentLightColor == vns::YellowLight) {
 
-            if (currentLightColor==vns::RedLight){
-                timeToNextGreen = timeToChange + 5.0;
-                timeToNextRed = timeToNextGreen + 25.0;
-                SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
-                send(NULL, vehicle, smartData);
+                }
+                //SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
+                //send(NULL, vehicle, smartData);
+                it.next();
             }
-            else if (currentLightColor==vns::GreenLight) {
-                timeToNextRed = timeToChange + 5.0;
-                timeToNextGreen = timeToNextRed + 25.0;
-                SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
-                send(NULL, vehicle, smartData);
-            }
-            else if(currentLightColor==vns::YellowLight) {
-
-            }
-            //SmartData* smartData = new SmartData(position, timeToNextGreen, timeToNextRed);
-            //send(NULL, vehicle, smartData);
         }
 
 }
