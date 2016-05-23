@@ -454,6 +454,30 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	float offset = 5;//todo: move
 	float accelOffset = 0; //todo: rethink
 
+	float fpos = getFrontPosition();
+
+	float stopPos = vns::MAX_FLOAT;
+	if(stops.isValid()){
+		stopPos = stops.getPosition();
+	}
+
+	if( next ){
+		junctionEnteringTime = sim->getSimulationTime();
+		if( stopPos < next->getRearPosition() ){
+			return model->accel( this, stopPos );
+		}
+		return model->accel( this , next );
+	}
+
+	// IF i don't have vehicle in front or stops, look to the junction
+	if( fpos>lane->getLaneEnd()-JUNCTION_LOOKUP){
+		// Approching junction
+		Junction* junction = lane->getEndJunction();
+		if( junction ){
+			return accelToJunction( sim, junction );
+		}
+	}
+
 	if(timeToGreen < timeToRed) {
 		float timeWithOffset = timeToGreen + offset;
 		float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
