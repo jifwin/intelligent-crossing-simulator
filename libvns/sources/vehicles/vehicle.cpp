@@ -448,7 +448,7 @@ float Vehicle::acc_enteringParking(Simulator* sim){
 float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	vns::Vec junctionPosition = smartData->getJunctionPosition();
 	float timeToGreen = smartData->getTimeToNextGreen();
-	float timeToRed = smartData->getTimeToNextRed();
+	float timeToRed = 10.0;
 
 	double distanceToJunction = pos.distanceTo(junctionPosition);
 	float offset = 5;//todo: move
@@ -474,14 +474,30 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		// Approching junction
 		Junction* junction = lane->getEndJunction();
 		if( junction ){
-			return accelToJunction( sim, junction );
+			Light light = lane->getTrafficLightColor();
+			if(light == vns::RedLight) {
+				return accelToJunction( sim, junction );
+			}
+			else {
+				if(speed > 10) //todo: TEMPORARY, RETINK, REMOVE, WHATEVA
+					return 0;
+				else
+					return accelToJunction( sim, junction );
+			}
 		}
 	}
-
-	if(timeToGreen < timeToRed) {
+	timeToGreen = NULL;//todo: revert
+	if(timeToGreen != NULL) {
 		float timeWithOffset = timeToGreen + offset;
 		float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
 		return requiredAccel < 0 ? requiredAccel : 0; //todo: rethink
+	}
+	else if(timeToRed != NULL) {
+		//todo: if you can, speed up to be faster!
+		//todo: if to much, brake
+		float requiredAccel = 2*(distanceToJunction-speed*timeToRed)/pow(timeToRed,2);
+		return requiredAccel > 0 ? requiredAccel : 0;
+		return requiredAccel;
 	}
 	else {
 		return acc_movingInLane(sim);
@@ -560,6 +576,7 @@ float Vehicle::acc_movingInJunction(Simulator* sim) {
 	if( next ){
 		acc = model->accel( this , next );
 	}else{
+		return 0; //todo: rethink
 		acc = model->accel(this);
 	}
 

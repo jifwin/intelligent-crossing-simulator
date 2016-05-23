@@ -43,7 +43,7 @@ namespace vns {
             //todo: iterator
 
             std::list<Vehicle*>::iterator iterator;
-            SmartData* smartData = new SmartData(position, timeToGreen, 99999);
+            SmartData* smartData = new SmartData(position, timeToGreen, timeToGreen); //todo time to red!
             timeToGreen -= 0.033;//todo: refactor
 
             for(iterator = vehicles.begin(); iterator != vehicles.end(); ++iterator) {

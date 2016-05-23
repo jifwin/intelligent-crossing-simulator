@@ -338,11 +338,12 @@ void Painter::drawVehicle(SceneViewer* w, const Vehicle* vehicle, uint8 lod){
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	w->renderText(0.0,0.0,0.0,QString("%1").arg(vehicle->getSpeed()));
-	w->renderText(0.0,2.5,0.0,QString("%1").arg(vehicle->getAccel()));
+	w->renderText(0.0,0.0,0.0,QString("%1").arg(vehicle->getAccel()));
+	w->renderText(0.0,2.5,0.0,QString("%1").arg(vehicle->getSpeed()));
+//	w->renderText(0.0,2.5,0.0,QString("%1").arg(vehicle->getAccel()));
 //	w->renderText(0.0,5.0,0.0,QString("%1").arg(vehicle->getFuelConsumption()));
 //	w->renderText(0.0,7.5,0.0,QString("%1").arg(vehicle->getTotalFuelConsumption()));
-	w->renderText(0.0,5.0,0.0,QString("%1").arg(vehicle->destinationSpeed));
+//	w->renderText(0.0,5.0,0.0,QString("%1").arg(vehicle->getID()));
 	/*
 	if( vehicle->isRightBlinking() ){
 		glColor3f(1, 0.9, 0);
