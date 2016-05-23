@@ -173,6 +173,7 @@ void Vehicle::initialize( Simulator* sim ) {
 	totalFuelConsumed = 0;
     nextThinkTime = -1;
     optionalLaneChangeThinkTime = -1;
+	destinationSpeed = 0;
 
     if(lane->hasFlag(Lane::ParkingLane)){
     	/* entering from a parking lane */

@@ -171,6 +171,7 @@ public:
 
 	void receiveSmartData(SmartData* smartData);
 	Lane* getCurrentLane() { return lane; };
+	float destinationSpeed;
 
 protected:
     /*! \cond PRIVATE */

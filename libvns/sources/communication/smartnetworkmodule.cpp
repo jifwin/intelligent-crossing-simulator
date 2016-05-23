@@ -13,6 +13,7 @@
 #include "lane.h"
 
 namespace vns {
+        float timeToGreen = 60.0;
         SmartNetworkModule::SmartNetworkModule(RoadNetwork *roadNetwork) {
             this->roadNetwork = roadNetwork;
         }
@@ -35,10 +36,20 @@ namespace vns {
 
             vns::Vector<Junction*> junctions = roadNetwork->getAllJunctions();
             //todo: iterate over junctions
-            Junction* firstJunction = junctions.at(5);
+//            Junction* firstJunction = junctions.at(0);
+            Junction* firstJunction = junctions.front();
             Vec position = firstJunction->getPosition(); //todo: this is how to get vector of junction position
             int debug = 1;
             //todo: iterator
+
+            std::list<Vehicle*>::iterator iterator;
+            SmartData* smartData = new SmartData(position, timeToGreen, 99999);
+            timeToGreen -= 0.033;//todo: refactor
+
+            for(iterator = vehicles.begin(); iterator != vehicles.end(); ++iterator) {
+                Vehicle *veh = *iterator;
+                send(NULL, veh, smartData);
+            }
             Vehicle * vehicle = vehicles.front(); //todod: tepmorarly, use send function to call for each vehicle
 
             Lane* currentCarLane = vehicle->getCurrentLane();
@@ -54,8 +65,7 @@ namespace vns {
 
 //            int timeToRed = 6;
 //            float endStopTime = sim->time + stops.getDuration();
-            SmartData* smartData = new SmartData(position, 5, 10);
-            send(NULL, vehicle, smartData);
+
         }
 
 }
