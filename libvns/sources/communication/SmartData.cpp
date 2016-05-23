@@ -5,7 +5,7 @@
 #include "SmartData.h"
 
 namespace vns {
-    SmartData::SmartData(vns::Vec junctionPosition, int timeToNextGreen, int timeToNextRed) {
+    SmartData::SmartData(vns::Vec junctionPosition, float timeToNextGreen, float timeToNextRed) {
         this->junctionPosition = junctionPosition;
         this->timeToNextGreen = timeToNextGreen;
         this->timeToNextRed = timeToNextRed;

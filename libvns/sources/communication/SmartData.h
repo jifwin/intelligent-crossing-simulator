@@ -12,8 +12,8 @@ namespace vns {
 
     private:
         vns::Vec junctionPosition;
-        int timeToNextGreen;
-        int timeToNextRed;
+        float timeToNextGreen;
+        float timeToNextRed;
 
     public:
         SmartData(vns::Vec junctionPosition, int timeToNextGreen, int timeToNextRed);
