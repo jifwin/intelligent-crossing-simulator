@@ -15,6 +15,7 @@
 namespace vns {
     SmartNetworkModule::SmartNetworkModule(RoadNetwork *roadNetwork) {
         this->roadNetwork = roadNetwork;
+        this->totalSimConsumption = 0;
     }
 
     void SmartNetworkModule::onVehicleCreated(Simulator *sim,
@@ -68,7 +69,11 @@ namespace vns {
             }
             SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
             send(NULL, currentVehicle, smartData);
+
+            totalSimConsumption += currentVehicle->totalFuelConsumed;
+
         }
+        std::cout << totalSimConsumption << std::endl;
     }
 
 }
