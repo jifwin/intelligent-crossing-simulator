@@ -57,18 +57,17 @@ namespace vns {
             if (currentLightColor == vns::RedLight) {
                 timeToNextGreen = timeToChange + 5.0;
                 timeToNextRed = timeToNextGreen + 25.0;
-                SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
-                send(NULL, currentVehicle, smartData);
             }
             else if (currentLightColor == vns::GreenLight) {
                 timeToNextRed = timeToChange + 5.0;
                 timeToNextGreen = timeToNextRed + 25.0;
-                SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
-                send(NULL, currentVehicle, smartData);
             }
             else if (currentLightColor == vns::YellowLight) {
-                //todo: rethink
+                timeToNextRed = timeToChange;
+                timeToNextGreen = timeToNextRed + 25.0;
             }
+            SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
+            send(NULL, currentVehicle, smartData);
         }
     }
 

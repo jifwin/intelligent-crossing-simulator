@@ -159,6 +159,7 @@ void Vehicle::updateStep( Simulator* sim ) {
     if(pos.x()==0 && pos.y()==0){
     	fprintf(stderr,"MERDA %d %lf %d %d\n",state,lanePos,lane==0,usingTrajectory);
     }
+	smartData = NULL; //todo: invalidating
 }
 
 void Vehicle::initialize( Simulator* sim ) {

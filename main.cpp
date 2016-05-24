@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 
 	bool gui = true;
 
-	vns::ManhattanMap man(1,1);
+	vns::ManhattanMap man(4,4);
 	man.setNumberOfForwardLanes(2);
 	man.setNumberOfBackwardLanes(2);
 	man.setRoadLength(500);
@@ -27,16 +27,6 @@ int main(int argc, char* argv[]) {
 	simulator->setTrafficGenerationModel( new vns::TrafficGenerationModel(routes) );
 	simulator->setVehicleFactory( new MyVehicleFactory() );
 
-	/*vns::NS3NetworkModule* networkModule = new vns::NS3NetworkModule();
-	MyNetwork* net = new MyNetwork( network );
-	networkModule->setNetwork( net );
-	simulator->setNetworkModule( networkModule );*/
-
-//	vns::SimpleNetworkModule* networkModule = new vns::SimpleNetworkModule();
-//	MyNetwork* mynetwork = new MyNetwork();
-//	mynetwork->setCommunicationRange(250);
-//	networkModule->setNetwork( mynetwork );
-	//simulator->setNetworkModule( networkModule );//todo: to be removed
 	simulator->setSmartNetworkModule(new vns::SmartNetworkModule(network));
 
 	if(gui){
