@@ -45,6 +45,7 @@ namespace vns {
 
             Lane *currentCarLane = currentVehicle->getLane();
             Junction *junction = currentCarLane->getEndJunction();
+            if(junction == NULL) continue;
             Vec junctionPosition = junction->getPosition();
 
             if (!isInRange(junction, currentVehicle)) continue;
