@@ -26,7 +26,7 @@ namespace vns {
         receiver->receiveSmartData(data);
     }
 
-    bool isInRange(Junction * sender, Vehicle *receiver) {
+    bool isInRange(Junction *sender, Vehicle *receiver) {
         const double SMART_RANGE = 200; //todo: move
 
         Vec senderPosition = sender->getPosition();
@@ -39,35 +39,35 @@ namespace vns {
         float timeToNextRed = 0;
         float timeToNextGreen = 0;
 
-            std::list<Vehicle *>::iterator it;
-            for (it = vehicles.begin(); it != vehicles.end(); it++) {
-                Vehicle *currentVehicle = *it;
+        std::list<Vehicle *>::iterator it;
+        for (it = vehicles.begin(); it != vehicles.end(); it++) {
+            Vehicle *currentVehicle = *it;
 
-                Lane *currentCarLane = currentVehicle->getLane();
-                Junction* junction = currentCarLane->getEndJunction();
-                Vec junctionPosition = junction->getPosition();
+            Lane *currentCarLane = currentVehicle->getLane();
+            Junction *junction = currentCarLane->getEndJunction();
+            Vec junctionPosition = junction->getPosition();
 
-                if(!isInRange(junction, currentVehicle)) continue;
+            if (!isInRange(junction, currentVehicle)) continue;
 
-                //todo: check if not 0
-                Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
-                float timeToChange = currentCarLane->getLightChangeTime();
+            //todo: check if not 0
+            Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
+            float timeToChange = currentCarLane->getLightChangeTime();
 
-                if (currentLightColor == vns::RedLight) {
-                    timeToNextGreen = timeToChange + 5.0;
-                    timeToNextRed = timeToNextGreen + 25.0;
-                    SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
-                    send(NULL, currentVehicle, smartData);
-                }
-                else if (currentLightColor == vns::GreenLight) {
-                    timeToNextRed = timeToChange + 5.0;
-                    timeToNextGreen = timeToNextRed + 25.0;
-                    SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
-                    send(NULL, currentVehicle, smartData);
-                }
-                else if (currentLightColor == vns::YellowLight) {
-                    //todo: rethink
-                }
+            if (currentLightColor == vns::RedLight) {
+                timeToNextGreen = timeToChange + 5.0;
+                timeToNextRed = timeToNextGreen + 25.0;
+                SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
+                send(NULL, currentVehicle, smartData);
+            }
+            else if (currentLightColor == vns::GreenLight) {
+                timeToNextRed = timeToChange + 5.0;
+                timeToNextGreen = timeToNextRed + 25.0;
+                SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
+                send(NULL, currentVehicle, smartData);
+            }
+            else if (currentLightColor == vns::YellowLight) {
+                //todo: rethink
+            }
         }
     }
 

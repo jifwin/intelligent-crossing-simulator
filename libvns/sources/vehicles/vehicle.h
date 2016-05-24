@@ -44,7 +44,12 @@ public:
 	static const uint8 Initialising = 9;
 	static const uint8 LeavingParking = 10;
 	static const uint8 EnteringParking = 11;
+	static const float speedConst = 0;
+	static const float accelConst = 0;
+	static const float standbyFuelPerHour = 1.8;
 
+	float totalFuelConsumed;
+	float lastFuelConsumption;
 protected:
 	/*! \cond PRIVATE */
     VehicleType vehicleType;
@@ -52,6 +57,7 @@ protected:
     DriverModel* model;
     float speed;
     float accel;
+	float fuel;
     float newAccel;
 	uint8 numberOfPassengers;
 	uint8 limitOfPassengers;
@@ -122,6 +128,9 @@ public:
     inline VehicleType getVehicleType() const { return vehicleType; };
     inline float getSpeed() const { return speed; };
     inline float getAccel() const { return accel; };
+	void calculateFuelConsumption();
+	float getFuelConsumption() const;
+	float getTotalFuelConsumption() const;
     inline void setUserData(void* data){ userdata = data; };
     inline void* getUserData() const { return userdata; };
     inline void* getNetworkNode() const { return networkNode; };
@@ -161,7 +170,8 @@ public:
     static Vehicle* fromObject(Object*);
 
 	void receiveSmartData(SmartData* smartData);
-//	Lane* getCurrentLane() { return lane; }; don't need it
+	Lane* getCurrentLane() { return lane; };
+	float destinationSpeed;
 
 protected:
     /*! \cond PRIVATE */
@@ -198,6 +208,7 @@ protected:
     virtual float acc_leavingParking(Simulator* sim);
     virtual float acc_enteringParking(Simulator* sim);
     virtual float acc_movingInLane(Simulator* sim);
+	virtual float acc_movingInLaneSmart(Simulator* sim);
     virtual float acc_changingLane(Simulator* sim);
     virtual float acc_stoppedInLane(Simulator* sim);
     virtual float acc_movingInJunction(Simulator* sim);

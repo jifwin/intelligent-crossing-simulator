@@ -343,6 +343,7 @@ void Painter::drawVehicle(SceneViewer* w, const Vehicle* vehicle, uint8 lod){
 		w->renderText(0.0, 0.0, 0.0, QString("%1").arg(smartData->getTimeToNextGreen()));
 		w->renderText(0.0, 2.5, 0.0, QString("%1").arg(smartData->getTimeToNextRed()));
 	}
+
 	/*
 	if( vehicle->isRightBlinking() ){
 		glColor3f(1, 0.9, 0);

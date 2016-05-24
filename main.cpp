@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 
 	bool gui = true;
 
-	vns::ManhattanMap man(4,4);
+	vns::ManhattanMap man(1,1);
 	man.setNumberOfForwardLanes(2);
 	man.setNumberOfBackwardLanes(2);
 	man.setRoadLength(500);

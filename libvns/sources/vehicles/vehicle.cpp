@@ -18,6 +18,8 @@
 #include "roadnetwork.h"
 #include "trigger.h"
 #include "ghostvehicle.h"
+#include "SmartData.h"
+#include <math.h>
 
 #define OPTIONAL_LANE_THINKTIME 3.0
 #define LANE_CHANGE_GAP 2.0
@@ -72,7 +74,35 @@ Vehicle::~Vehicle(){
 	if(tmpPath){ delete tmpPath; }
 }
 
+void Vehicle::calculateFuelConsumption() {
+	if(getSpeed()>0.1)
+	lastFuelConsumption = (getFuelConsumption()/100000)*getSpeed()*vns::DriverModel::DT;
+	else
+		lastFuelConsumption = (standbyFuelPerHour/3600)*vns::DriverModel::DT; //paliwo na sekunde* ilość sekund
+	totalFuelConsumed += lastFuelConsumption;
+}
+
+	float Vehicle::getTotalFuelConsumption() const {
+		return totalFuelConsumed;
+	}
+
+float Vehicle::getFuelConsumption() const {
+	float speedkmh = speed*3.6;
+	float fuelConsumptionBySpeed = (pow(speedkmh,4)*9.0428*pow(10,-8)+
+									pow(speedkmh,3)*(-4.256)*pow(10,-5)+
+									pow(speedkmh,2)*0.0077+
+									speedkmh*(-0.503)+
+									18.7008+speedConst);
+	float fuelConsumptionByAccel = accel*9.8589+3.5642+accelConst;
+	if (accel< -0.1)
+		return 0;
+	else if (accel>=-0.1 && accel<=0.1)
+		return fuelConsumptionBySpeed;
+	else
+		return fuelConsumptionByAccel+fuelConsumptionBySpeed;
+}
 void Vehicle::simulationStep( Simulator* sim ) {
+	calculateFuelConsumption();
     if(sim->time >= nextThinkTime){
     	nextThinkTime = sim->time + vns::DriverModel::DT;
     	(this->*checkFunction)( sim );
@@ -140,9 +170,11 @@ void Vehicle::initialize( Simulator* sim ) {
 	usingTrajectory = false;
 	invertWay = false;
 	laneToChange = 0;
+	totalFuelConsumed = 0;
     nextThinkTime = -1;
     optionalLaneChangeThinkTime = -1;
 	smartData = NULL;
+	destinationSpeed = 0;
 
     if(lane->hasFlag(Lane::ParkingLane)){
     	/* entering from a parking lane */
@@ -176,7 +208,7 @@ void Vehicle::initialize( Simulator* sim ) {
         enterRoad( sim );
         state = Vehicle::MovingInLane;
     	stateFunction = &Vehicle::movingInLane;
-    	accelFunction = &Vehicle::acc_movingInLane;
+    	accelFunction = &Vehicle::acc_movingInLaneSmart;
     	checkFunction = &Vehicle::check_movingInLane;
     }
 }
@@ -346,7 +378,7 @@ void Vehicle::changingLane(Simulator* sim) {
         sim->removeObjectFromLane(ghost);
         state = Vehicle::MovingInLane;
 		stateFunction = &Vehicle::movingInLane;
-		accelFunction = &Vehicle::acc_movingInLane;
+		accelFunction = &Vehicle::acc_movingInLane; //todo: check
 		checkFunction = &Vehicle::check_movingInLane;
 		//movingInLane( sim );
     }
@@ -412,6 +444,70 @@ float Vehicle::acc_leavingParking(Simulator* sim){
 float Vehicle::acc_enteringParking(Simulator* sim){
 	/* vehicles entering a parking lane */
 	return model->accel( this );
+}
+
+float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
+	if(smartData == NULL) {
+		return acc_movingInLane(sim);
+	}
+
+	vns::Vec junctionPosition = smartData->getJunctionPosition();
+	float timeToGreen = smartData->getTimeToNextGreen();
+	float timeToRed = smartData->getTimeToNextRed();
+
+	double distanceToJunction = pos.distanceTo(junctionPosition);
+	float offset = 5;//todo: move
+	float accelOffset = 0; //todo: rethink
+
+	float fpos = getFrontPosition();
+
+	float stopPos = vns::MAX_FLOAT;
+	if(stops.isValid()){
+		stopPos = stops.getPosition();
+	}
+
+	if( next ){
+		junctionEnteringTime = sim->getSimulationTime();
+		if( stopPos < next->getRearPosition() ){
+			return model->accel( this, stopPos );
+		}
+		return model->accel( this , next );
+	}
+
+	// IF i don't have vehicle in front or stops, look to the junction
+	if( fpos>lane->getLaneEnd()-JUNCTION_LOOKUP){
+		// Approching junction
+		Junction* junction = lane->getEndJunction();
+		if( junction ){
+			Light light = lane->getTrafficLightColor();
+			if(light == vns::RedLight) {
+				return accelToJunction( sim, junction );
+			}
+			else {
+				if(speed > 10) //todo: TEMPORARY, RETHINK, REMOVE, WHATEVA
+					return 0;
+				else
+					return accelToJunction( sim, junction );
+			}
+		}
+	}
+	timeToGreen = NULL;//todo: revert
+	if(timeToGreen != NULL) {
+		float timeWithOffset = timeToGreen + offset;
+		float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
+		return requiredAccel < 0 ? requiredAccel : 0; //todo: rethink
+	}
+	else if(timeToRed != NULL) {
+		//todo: if you can, speed up to be faster!
+		//todo: if to much, brake
+		float requiredAccel = 2*(distanceToJunction-speed*timeToRed)/pow(timeToRed,2);
+		return requiredAccel > 0 ? requiredAccel : 0;
+		return requiredAccel;
+	}
+	else {
+		return acc_movingInLane(sim);
+		//todo:
+	}
 }
 
 float Vehicle::acc_movingInLane(Simulator* sim){
@@ -485,6 +581,7 @@ float Vehicle::acc_movingInJunction(Simulator* sim) {
 	if( next ){
 		acc = model->accel( this , next );
 	}else{
+		return 0; //todo: rethink
 		acc = model->accel(this);
 	}
 
