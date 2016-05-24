@@ -18,7 +18,7 @@ namespace vns {
     class SmartNetworkModule {
 
     private:
-            vns::HashTable<uint64, Vehicle*>* vehicles;
+            std::list<Vehicle *> vehicles;
             RoadNetwork* roadNetwork;
         //todo: list of crossings
 
