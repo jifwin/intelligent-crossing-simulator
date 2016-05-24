@@ -478,7 +478,9 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		if( stopPos < next->getRearPosition() ){
 			return model->accel( this, stopPos );
 		}
-		return model->accel( this , next );
+		if(next->gapTo(this) < 5) {//todo: check: REFACTOR
+			return model->accel(this, next);
+		}
 	}
 
 	// IF i don't have vehicle in front or stops, look to the junction
@@ -506,9 +508,10 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	else if(timeToRed < timeToGreen) { //green light
 		//todo: if you can, speed up to be faster!
 		//todo: if to much, brake
-		float timeWithOffset = timeToRed - offset - sim->getSimulationTime();
+		float simulationTime = sim->getSimulationTime();
+		float timeWithOffset = timeToRed - offset - simulationTime;
 		float requiredAccel = 2*(distanceToJunction-speed*timeWithOffset)/pow(timeWithOffset,2);
-		if(requiredAccel > 2) { //maximum accel to green ligh, //todo: change to 5
+		if(requiredAccel > 2 || timeWithOffset < 0) { //maximum accel to green ligh, //todo: change to 5
 			return acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
 		}
 		return requiredAccel > 0 ? requiredAccel : 0;
