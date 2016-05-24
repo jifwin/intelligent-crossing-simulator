@@ -33,7 +33,7 @@ namespace vns {
     }
 
     bool isInRange(Junction *sender, Vehicle *receiver) {
-        const double SMART_RANGE = 500; //todo: move
+        const double SMART_RANGE = 250; //todo: move
 
         Vec senderPosition = sender->getPosition();
         Vec receiverPosition = receiver->getPosition();

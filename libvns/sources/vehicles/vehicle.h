@@ -209,6 +209,7 @@ protected:
     virtual float acc_enteringParking(Simulator* sim);
     virtual float acc_movingInLane(Simulator* sim);
 	virtual float acc_movingInLaneSmartToNextGreen(Simulator *sim, float timeToGreen, float offset, float distanceToJunction);
+	virtual float acc_movingInLaneSmartToNextGreenAlternative(Simulator *sim, float timeToGreen, float offset, float distanceToJunction);
 	virtual float acc_movingInLaneSmart(Simulator* sim);
     virtual float acc_changingLane(Simulator* sim);
     virtual float acc_stoppedInLane(Simulator* sim);

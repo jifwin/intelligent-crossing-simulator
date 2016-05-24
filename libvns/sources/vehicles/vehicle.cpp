@@ -452,6 +452,15 @@ float Vehicle::acc_movingInLaneSmartToNextGreen(Simulator *sim, float timeToGree
 	float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
 	return requiredAccel < 0 ? requiredAccel : 0;
 }
+	float Vehicle::acc_movingInLaneSmartToNextGreenAlternative(Simulator *sim, float timeToGreen, float offset, float distanceToJunction) {
+		float destinatedSpeed = 3;
+		float timeWithOffset = timeToGreen + offset - sim->getSimulationTime();
+		float timeSearching = 2*(distanceToJunction+15-destinatedSpeed*timeWithOffset)/(speed-destinatedSpeed); //add ofset
+		float requiredAccel = -(speed-destinatedSpeed)/timeSearching;
+		float v = speed - timeSearching*requiredAccel;
+		//float requiredAccel = -pow((speed-destinatedSpeed),2)/(2*(distanceToJunction-timeWithOffset*destinatedSpeed));
+		return requiredAccel < 0 ? requiredAccel : 0;
+	}
 
 float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	if(smartData == NULL) {
@@ -502,7 +511,11 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	}
 
 	if(timeToGreen < timeToRed) { //red light
-		return acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
+		float acc =  acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
+		float nonZeroSpeed = speed+acc*(timeToGreen + offset - sim->getSimulationTime());
+		if(nonZeroSpeed<0)
+			acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+		return acc;
 		//todo: if too small then slow faster and go slowly to the junction
 	}
 	else if(timeToRed < timeToGreen) { //green light
@@ -512,7 +525,10 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		float timeWithOffset = timeToRed - offset - simulationTime;
 		float requiredAccel = 2*(distanceToJunction-speed*timeWithOffset)/pow(timeWithOffset,2);
 		if(requiredAccel > 2 || timeWithOffset < 0) { //maximum accel to green ligh, //todo: change to 5
-			return acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
+			float acc =  acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
+			if(speed+acc*(timeToGreen-sim->getSimulationTime()+offset)<0)
+				float acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+			return acc;
 		}
 		return requiredAccel > 0 ? requiredAccel : 0;
 	}
