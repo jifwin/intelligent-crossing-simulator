@@ -25,6 +25,7 @@ namespace vns {
     public:
         SmartNetworkModule(RoadNetwork* roadNetwork);
         void onVehicleCreated(Simulator* sim, Vehicle * vehicle);
+        void onVehicleRemoved(Simulator* sim, Vehicle * vehicle);
         void send(TrafficLightController * sender, Vehicle * receiver, SmartData * data);
         void onSimulationStep(Simulator* sim);
 

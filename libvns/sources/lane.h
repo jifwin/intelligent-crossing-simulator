@@ -22,6 +22,7 @@
 #include "trigger.h"
 #include "vector.h"
 #include "hashtable.h"
+#include "SmartChange.h"
 
 // TODO: add removeItem in Vector
 
@@ -102,7 +103,7 @@ private:
 
     vns::Lock mlock;
     Light lightColor;
-	float nextLightChangeTime;
+	SmartChange * smartChange;
     LaneSensor* laneSensors;
     void* userdata;
     LaneObject* first;
@@ -179,8 +180,8 @@ public:
     inline bool hasTrafficLight() const { return lightColor != NoLight; };
     inline Light getTrafficLightColor() const { return lightColor; };
     inline void setTrafficLightColor(Light color){ lightColor = color; };
-	inline void setLightChangeTime(float time) { this->nextLightChangeTime = time;}
-	inline float getLightChangeTime() { return this->nextLightChangeTime;}
+	inline void setSmartChange(SmartChange * smartChange) { this->smartChange = smartChange;}
+	inline SmartChange* getSmartChange() { return this->smartChange;}
     inline void setUserData(void* data){ userdata = data; };
     inline void* getUserData() const { return userdata; };
 	inline Light getNextTrafficLightColor() const { return lightColor; };

@@ -180,6 +180,7 @@ void Simulator::deleteVehicle(Vehicle *vehicle){
     for(vns::List<Observer*>::Iterator obs=observers.begin();obs!=observers.end();obs++){(*obs)->onVehicleRemoved(this,vehicle);}
     vehicle->uninstallAllModules(this);
     if( networkModule ) networkModule->onVehicleRemoved(this,vehicle);
+	if(smartNetworkModule) smartNetworkModule->onVehicleRemoved(this, vehicle);
 	if(vehicle->lane != 0){
 		vehicle->lane->removeObject(vehicle);
 	}

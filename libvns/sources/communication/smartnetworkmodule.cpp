@@ -11,6 +11,7 @@
 #include <list>
 #include "fixedtimetrafficlightcontroller.h"
 #include "lane.h"
+#include "SmartChange.h"
 
 namespace vns {
     SmartNetworkModule::SmartNetworkModule(RoadNetwork *roadNetwork) {
@@ -22,12 +23,17 @@ namespace vns {
         vehicles.push_back(vehicle);
     }
 
+    void SmartNetworkModule::onVehicleRemoved(Simulator *sim,
+                                              Vehicle *vehicle) { //todo: called form simulator onVehicleCreated
+        vehicles.remove(vehicle);
+    }
+
     void SmartNetworkModule::send(TrafficLightController *sender, Vehicle *receiver, SmartData *data) {
         receiver->receiveSmartData(data);
     }
 
     bool isInRange(Junction *sender, Vehicle *receiver) {
-        const double SMART_RANGE = 200; //todo: move
+        const double SMART_RANGE = 500; //todo: move
 
         Vec senderPosition = sender->getPosition();
         Vec receiverPosition = receiver->getPosition();
@@ -44,29 +50,60 @@ namespace vns {
             Vehicle *currentVehicle = *it;
 
             Lane *currentCarLane = currentVehicle->getLane();
+            if (currentCarLane == NULL) continue;
             Junction *junction = currentCarLane->getEndJunction();
             if(junction == NULL) continue;
             Vec junctionPosition = junction->getPosition();
 
             if (!isInRange(junction, currentVehicle)) continue;
 
+
             //todo: check if not 0
             Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
-            float timeToChange = currentCarLane->getLightChangeTime();
+            SmartChange * smartChange = currentCarLane->getSmartChange();
 
-            if (currentLightColor == vns::RedLight) {
-                timeToNextGreen = timeToChange + 5.0;
-                timeToNextRed = timeToNextGreen + 25.0;
+            if(smartChange == NULL) continue;
+
+            Light currentLight = smartChange->getCurrentLight();
+            Light nextLight = smartChange->getNextLight();
+            float timeToChange = smartChange->getTimeToChange();
+            SmartData *smartData;
+
+            if(currentLight == vns::RedLight) {
+                if(nextLight == vns::GreenLight)
+                {
+                    smartData = new SmartData(junctionPosition,timeToChange,timeToChange+25);
+                }
+                else if(nextLight == vns::RedLight){
+                    smartData = new SmartData(junctionPosition,timeToChange+5,timeToChange+30);
+
+                }
             }
-            else if (currentLightColor == vns::GreenLight) {
-                timeToNextRed = timeToChange + 5.0;
-                timeToNextGreen = timeToNextRed + 25.0;
+            else if(currentLight == vns::YellowLight) {
+                smartData = new SmartData(junctionPosition,timeToChange+25,timeToChange);
+
             }
-            else if (currentLightColor == vns::YellowLight) {
-                timeToNextRed = timeToChange;
-                timeToNextGreen = timeToNextRed + 25.0;
+            else if(currentLight == vns::GreenLight) {
+                smartData = new SmartData(junctionPosition,timeToChange+30,timeToChange+5);
+
             }
-            SmartData *smartData = new SmartData(junctionPosition, timeToNextGreen, timeToNextRed);
+            else {
+                //todo
+            }
+
+
+//            if (currentLightColor == vns::RedLight) {
+//                timeToNextGreen = timeToChange + 5.0;
+//                timeToNextRed = timeToNextGreen + 25.0;
+//            }
+//            else if (currentLightColor == vns::GreenLight) {
+//                timeToNextRed = timeToChange + 5.0;
+//                timeToNextGreen = timeToNextRed + 25.0;
+//            }
+//            else if (currentLightColor == vns::YellowLight) {
+//                timeToNextRed = timeToChange;
+//                timeToNextGreen = timeToNextRed + 25.0;
+//            }
             send(NULL, currentVehicle, smartData);
         }
     }

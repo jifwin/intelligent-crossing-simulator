@@ -129,7 +129,8 @@ HEADERS += sources/simulation/generationfunction.h \
     sources/communication/networkmodule.h \
     sources/communication/simplenetworkmodule.h \
     sources/communication/smartnetworkmodule.h \
-     sources/communication/SmartData.h
+     sources/communication/SmartData.h \
+     sources/communication/SmartChange.h
 SOURCES += sources/core/lock.cpp \
     sources/simulation/generationfunction.cpp \
     sources/simulation/trafficgenerationmodel.cpp \
@@ -197,7 +198,8 @@ SOURCES += sources/core/lock.cpp \
     sources/roadnetwork.cpp \
     sources/communication/simplenetworkmodule.cpp \
     sources/communication/smartnetworkmodule.cpp \
-    sources/communication/SmartData.cpp
+    sources/communication/SmartData.cpp \
+    sources/communication/SmartChange.cpp
 alib:CONFIG += staticlib \
     warn_on \
     openmp \

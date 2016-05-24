@@ -13,6 +13,7 @@
 #include "fixedtimetrafficlightcontroller.h"
 #include "roadnetwork.h"
 #include "simulator.h"
+#include "SmartChange.h"
 
 namespace vns {
 
@@ -181,13 +182,21 @@ void FixedTimeTrafficLightController::update(Simulator* sim){
 		//todo: states podgladniesz w debuggerze;) i tyle
 
 	currentState = (1 + currentState) % states.size();
+	int8 nextStateNumber = (1 + currentState) % states.size();
+	TrafficLightState* nextState = states.at(nextStateNumber);
 	TrafficLightState* state = states.at(currentState);
 	for( int8 i=0 ; i < state->getNumberOfLights() ; i++ ){
 		if(lanes[i]){
 			float dur = state->getDuration();
-			lanes[i]->setLightChangeTime(sim->getSimulationTime()+dur);
-			//todo: set duration
 			lanes[i]->setTrafficLightColor( state->getLight(i) );
+
+			SmartChange * smartChange =
+					new SmartChange(state->getLight(i),
+									nextState->getLight(i),
+									sim->getSimulationTime()+dur);
+			lanes[i]->setSmartChange(smartChange);
+
+
 		}
 	}
 	double comuteTime = sim->getSimulationTime()+state->getDuration();

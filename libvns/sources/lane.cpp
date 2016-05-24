@@ -37,7 +37,7 @@ Lane::Lane() {
     laneSensors = 0;
     userdata = 0;
     nextLanes = new vns::HashTable<const Road*,Lane*>(8);
-	nextLightChangeTime = 0;
+	smartChange = NULL;
 
     exitVehicle = 0;
 }

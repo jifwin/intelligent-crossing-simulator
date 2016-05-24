@@ -337,12 +337,15 @@ void Painter::drawVehicle(SceneViewer* w, const Vehicle* vehicle, uint8 lod){
 	glVertex2d(-vehicle->getLength() * 0.5, -vehicle->getWidth() * 0.5);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-
+//todo; draw circle around smart car
 	SmartData * smartData = vehicle->smartData;
 	if(smartData != NULL) {
-		w->renderText(0.0, 0.0, 0.0, QString("%1").arg(smartData->getTimeToNextGreen()));
-		w->renderText(0.0, 2.5, 0.0, QString("%1").arg(smartData->getTimeToNextRed()));
+//		drawCircularPoint(0.0,0.0,0.4);
 	}
+		w->renderText(0.0, 0.0, 0.0, QString("%1").arg(vehicle->getID()));
+		w->renderText(0.0, 1.0, 0.0, QString("%1").arg(vehicle->accel));
+		w->renderText(0.0, 2.0, 0.0, QString("%1").arg(vehicle->speed));
+//	}
 
 	/*
 	if( vehicle->isRightBlinking() ){
