@@ -38,7 +38,7 @@ namespace vns {
     void SmartNetworkModule::onSimulationStep(Simulator *sim) {
         float timeToNextRed = 0;
         float timeToNextGreen = 0;
-        totalSimConsumption = 0;
+        float totalSimConsumption = 0;
 
         std::list<Vehicle *>::iterator it;
         for (it = vehicles.begin(); it != vehicles.end(); it++) {
