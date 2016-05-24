@@ -26,20 +26,29 @@ namespace vns {
         receiver->receiveSmartData(data);
     }
 
+    bool isInRange(Junction * sender, Vehicle *receiver) {
+        const double SMART_RANGE = 200; //todo: move
+
+        Vec senderPosition = sender->getPosition();
+        Vec receiverPosition = receiver->getPosition();
+        double distance = senderPosition.distanceTo(receiverPosition);
+        return distance < SMART_RANGE;
+    }
+
     void SmartNetworkModule::onSimulationStep(Simulator *sim) {
         float timeToNextRed = 0;
         float timeToNextGreen = 0;
-
-        vns::Vector<Junction *> junctions = roadNetwork->getAllJunctions();
-        for (int i = 0; i < junctions.size(); i++) {
-            Junction *junction = junctions.at(i);
-            Vec junctionPosition = junction->getPosition();
 
             std::list<Vehicle *>::iterator it;
             for (it = vehicles.begin(); it != vehicles.end(); it++) {
                 Vehicle *currentVehicle = *it;
 
                 Lane *currentCarLane = currentVehicle->getLane();
+                Junction* junction = currentCarLane->getEndJunction();
+                Vec junctionPosition = junction->getPosition();
+
+                if(!isInRange(junction, currentVehicle)) continue;
+
                 //todo: check if not 0
                 Light currentLightColor = currentCarLane->getTrafficLightColor(); //todo
                 float timeToChange = currentCarLane->getLightChangeTime();
@@ -59,7 +68,6 @@ namespace vns {
                 else if (currentLightColor == vns::YellowLight) {
                     //todo: rethink
                 }
-            }
         }
     }
 
