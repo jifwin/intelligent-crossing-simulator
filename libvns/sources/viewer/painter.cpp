@@ -342,6 +342,8 @@ void Painter::drawVehicle(SceneViewer* w, const Vehicle* vehicle, uint8 lod){
 	if(smartData != NULL) {
 //		drawCircularPoint(0.0,0.0,0.4);
 	}
+		w->renderText(0.0, 4.0, 0.0, QString("%1").arg(vehicle->distanceTmp));
+		w->renderText(0.0, 3.0, 0.0, QString("%1").arg(QString::fromStdString(vehicle->mode)));
 		w->renderText(0.0, 0.0, 0.0, QString("%1").arg(vehicle->getID()));
 		w->renderText(0.0, 1.0, 0.0, QString("%1").arg(vehicle->accel));
 		w->renderText(0.0, 2.0, 0.0, QString("%1").arg(vehicle->speed));

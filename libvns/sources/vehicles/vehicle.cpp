@@ -20,10 +20,24 @@
 #include "ghostvehicle.h"
 #include "SmartData.h"
 #include <math.h>
+#include <string>
+#include <sstream>
 
 #define OPTIONAL_LANE_THINKTIME 3.0
 #define LANE_CHANGE_GAP 2.0
-#define JUNCTION_LOOKUP 20.0
+#define JUNCTION_LOOKUP 20.0 //todo: bylo 20!
+
+std::string float_to_string( float liczba )
+{
+	std::stringstream FloatToStr;
+	std::string str;
+
+	FloatToStr << liczba;
+	FloatToStr >> str;
+	FloatToStr.clear();
+
+	return str;
+}
 
 namespace vns {
 
@@ -165,6 +179,8 @@ void Vehicle::updateStep( Simulator* sim ) {
 void Vehicle::initialize( Simulator* sim ) {
 	currentLaneDecision = DriverModel::None;
 	laneStopPosition = vns::MAX_FLOAT;
+
+	countSteps = 0;
 
 	INeedNewRoute = false;
 	junctionEnteringTime = vns::MAX_DOUBLE;
@@ -447,23 +463,175 @@ float Vehicle::acc_enteringParking(Simulator* sim){
 	return model->accel( this );
 }
 
+float Vehicle::calculateFinalSmartSpeed(float distance, float timeToChange, float timeToSmartStop) {
+	float finalSpeed = (2*distance-speed*timeToSmartStop)/(2*timeToChange-timeToSmartStop);
+	return finalSpeed;
+}
+
 float Vehicle::acc_movingInLaneSmartToNextGreen(Simulator *sim, float timeToGreen, float offset, float distanceToJunction) {
 	float timeWithOffset = timeToGreen + offset - sim->getSimulationTime();
 	float requiredAccel = -2*(speed*timeWithOffset-distanceToJunction)/pow(timeWithOffset,2);
 	return requiredAccel < 0 ? requiredAccel : 0;
 }
 	float Vehicle::acc_movingInLaneSmartToNextGreenAlternative(Simulator *sim, float timeToGreen, float offset, float distanceToJunction) {
-		float destinatedSpeed = 3;
+		mode = "alternative";
 		float timeWithOffset = timeToGreen + offset - sim->getSimulationTime();
-		float timeSearching = 2*(distanceToJunction+15-destinatedSpeed*timeWithOffset)/(speed-destinatedSpeed); //add ofset
-		float requiredAccel = -(speed-destinatedSpeed)/timeSearching;
-		float v = speed - timeSearching*requiredAccel;
-		//float requiredAccel = -pow((speed-destinatedSpeed),2)/(2*(distanceToJunction-timeWithOffset*destinatedSpeed));
-		return requiredAccel < 0 ? requiredAccel : 0;
+		float timeSearching = 2*distanceToJunction/speed;
+		float timeFraction = 0.5;
+		float newTimeSearching = timeSearching*timeFraction;
+		if(newTimeSearching<timeWithOffset)
+		{
+			float finalSpeed = calculateFinalSmartSpeed(distanceToJunction, timeWithOffset, newTimeSearching);
+			float acc = -1.0*(speed-finalSpeed)/newTimeSearching;
+			return acc;
+		}
+		else {
+			return 0;
+		}
+		//		float timeSearching = 2*(distanceToJunction-50-destinatedSpeed*timeWithOffset)/(speed-destinatedSpeed); //add ofset
+//		float requiredAccel = -(speed-destinatedSpeed)/timeSearching;
+//		float v = speed + timeSearching*requiredAccel;
+//		//float requiredAccel = -pow((speed-destinatedSpeed),2)/(2*(distanceToJunction-timeWithOffset*destinatedSpeed));
+//		if(requiredAccel > 0) {
+//			int d = 1;
+//		}
+//		return requiredAccel < 0 ? requiredAccel : 0;
 	}
 
+
+float Vehicle::alternativeAccelToGreen(Simulator * sim, float distance, float time) {
+	float timeWithOffset = time; //todo: offset?
+	float timeToZeroedSpeed = 2*distance/speed;
+	float timeFraction = 0.1; //todo: 0.5
+	float optimalTime = timeToZeroedSpeed*timeFraction;
+	if(optimalTime<timeWithOffset){
+		float finalSpeed = calculateFinalSmartSpeed(distance, timeWithOffset, optimalTime);
+		float acc = -1.0*(speed-finalSpeed)/optimalTime;
+		mode = "alternative OK" + float_to_string(time);
+		return acc;
+	}
+	else{
+		mode = "alternative moving in lane" + float_to_string(time);
+		return acc_movingInLane(sim);
+	}
+
+}
+
+float Vehicle::accelToGreen(float distance, float time) {
+	float acc = (2*distance-2*speed*time)/pow(time, 2);
+	return acc;
+}
+
 float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
+
+	countSteps++;
+
 	if(smartData == NULL) {
+		mode = "moving In Lane";
+		return acc_movingInLane(sim);
+	}
+
+	float fpos = getFrontPosition();
+
+	float stopPos = vns::MAX_FLOAT;
+	if(stops.isValid()){
+		stopPos = stops.getPosition();
+	}
+
+	if( next ){
+		junctionEnteringTime = sim->getSimulationTime();
+		if( stopPos < next->getRearPosition() ){
+			mode = "moving to stoppos";
+			return model->accel( this, stopPos );
+		}
+
+		if(gapTo(next) < 5) {//todo: check: REFACTOR
+			mode = "moving to car";
+			return model->accel(this, next);
+		}
+	}
+
+	// IF i don't have vehicle in front or stops, look to the junction
+	if( fpos>lane->getLaneEnd()-JUNCTION_LOOKUP){
+		// Approching junction
+		Junction* junction = lane->getEndJunction();
+		if( junction ){
+			Light light = lane->getTrafficLightColor();
+			if(light == vns::RedLight) {
+				mode = "accel to junction";
+				return accelToJunction( sim, junction );
+			}
+			else {
+				if(speed > 10) { //todo: TEMPORARY, RETHINK, REMOVE, WHATEVA
+					mode = "0 speed > 10";
+					return 0;
+				}
+				else {
+					mode = "accel to junction else";
+					return accelToJunction(sim, junction);
+				}
+			}
+		}
+	}
+
+	vns::Vec junctionPosition = smartData->getJunctionPosition();
+	float timeToGreen = smartData->getTimeToNextGreen() - sim->getSimulationTime()+5; //todo: rembemer!
+	float timeToRed = smartData->getTimeToNextRed() - sim->getSimulationTime()-2;
+	double distanceToJunction = pos.distanceTo(junctionPosition)-20; //todo
+	distanceTmp = distanceToJunction;
+
+	if(timeToGreen<timeToRed) { //aktualne czerwone, nastepne zielone
+
+		if(speed*timeToGreen < distanceToJunction) {
+			mode = "to red with 0" + float_to_string(timeToGreen);
+//			return 0;
+			return acc_movingInLane(sim);
+		}
+		else {
+			mode = "normalne zwalnianie do zielonego" + float_to_string(timeToGreen);
+			float acc = accelToGreen(distanceToJunction, timeToGreen);
+			if(true || speed+acc*timeToGreen < 0) { //todo: zmienilismy!
+				mode = "alternatywne zwalnianie do zielonego" + float_to_string(timeToGreen);
+				float alternativeAcc = alternativeAccelToGreen(sim, distanceToJunction, timeToGreen);
+				return alternativeAcc;
+			}
+			return acc;
+		}
+
+	}
+	else if(timeToRed<timeToGreen) { //aktualne zielone, nastepne czerwone
+
+		if(speed*timeToRed > distanceToJunction) { //zdazymy
+			mode = "zdazymy" + float_to_string(timeToGreen);
+			return acc_movingInLane(sim);
+		}
+		else {
+			float acc = accelToGreen(distanceToJunction, timeToRed); //todo: -2.5 bo zolte
+			//if(speed+acc*(timeToRed) > 20) { //za szybko todo: przy ujemnym czasie kosmiczne predkosci!
+			if(acc>5 || speed+acc*(timeToRed) > 20 ) { //todo: zastanowic sie
+				float accToNextGreen = accelToGreen(distanceToJunction, timeToGreen);
+				mode = "nastepne normalnie" + float_to_string(timeToGreen);
+				if(true || speed+accToNextGreen*timeToGreen < 0) { //todo: zmienilismy!
+					float alternativeAcc = alternativeAccelToGreen(sim, distanceToJunction, timeToGreen);
+					mode = "nastepne alternative" + float_to_string(timeToGreen);
+					return alternativeAcc;
+				}
+				return accToNextGreen;
+			}
+			mode = "zdazymy przyspieszajac" + float_to_string(timeToGreen);
+			return acc;
+		}
+
+	}
+
+
+	/*
+
+
+	//todo: old below
+
+	if(smartData == NULL) {
+		mode = "moving In Lane";
 		return acc_movingInLane(sim);
 	}
 
@@ -471,7 +639,7 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	float timeToGreen = smartData->getTimeToNextGreen();
 	float timeToRed = smartData->getTimeToNextRed();
 
-	double distanceToJunction = pos.distanceTo(junctionPosition);
+	double distanceToJunction = pos.distanceTo(junctionPosition)+50;
 	float offset = 5;//todo: move
 	float accelOffset = 0; //todo: rethink
 
@@ -485,9 +653,11 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	if( next ){
 		junctionEnteringTime = sim->getSimulationTime();
 		if( stopPos < next->getRearPosition() ){
+			mode = "moving to stoppos";
 			return model->accel( this, stopPos );
 		}
 		if(next->gapTo(this) < 5) {//todo: check: REFACTOR
+			mode = "moving to car < 5";
 			return model->accel(this, next);
 		}
 	}
@@ -499,13 +669,18 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		if( junction ){
 			Light light = lane->getTrafficLightColor();
 			if(light == vns::RedLight) {
+				mode = "accel to junction";
 				return accelToJunction( sim, junction );
 			}
 			else {
-				if(speed > 10) //todo: TEMPORARY, RETHINK, REMOVE, WHATEVA
+				if(speed > 10) { //todo: TEMPORARY, RETHINK, REMOVE, WHATEVA
+					mode = "0 speed > 10";
 					return 0;
-				else
-					return accelToJunction( sim, junction );
+				}
+				else {
+					mode = "accel to junction else";
+					return accelToJunction(sim, junction);
+				}
 			}
 		}
 	}
@@ -513,12 +688,29 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	if(timeToGreen < timeToRed) { //red light
 		float acc =  acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
 		float nonZeroSpeed = speed+acc*(timeToGreen + offset - sim->getSimulationTime());
-		if(nonZeroSpeed<0)
+		mode = "green<red";
+//		if(nonZeroSpeed<0) {
 			acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+//		}
 		return acc;
 		//todo: if too small then slow faster and go slowly to the junction
 	}
+
+
+		//todo: to remove xD
 	else if(timeToRed < timeToGreen) { //green light
+	float acc;
+		if(distanceToJunction>100) {
+			acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+		}
+		else
+		{
+			acc = acc_movingInLane(sim);
+		}
+		return acc;
+	}
+	else if(timeToRed < timeToGreen) { //green light
+		mode = "red < green";
 		//todo: if you can, speed up to be faster!
 		//todo: if to much, brake
 		float simulationTime = sim->getSimulationTime();
@@ -526,8 +718,9 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		float requiredAccel = 2*(distanceToJunction-speed*timeWithOffset)/pow(timeWithOffset,2);
 		if(requiredAccel > 2 || timeWithOffset < 0) { //maximum accel to green ligh, //todo: change to 5
 			float acc =  acc_movingInLaneSmartToNextGreen(sim, timeToGreen, offset, distanceToJunction);
-			if(speed+acc*(timeToGreen-sim->getSimulationTime()+offset)<0)
-				float acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+			if(speed+acc*(timeToGreen-sim->getSimulationTime()+offset)<0) {
+				acc = acc_movingInLaneSmartToNextGreenAlternative(sim, timeToGreen, offset, distanceToJunction);
+			}
 			return acc;
 		}
 		return requiredAccel > 0 ? requiredAccel : 0;
@@ -535,7 +728,7 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 	else {
 		return acc_movingInLane(sim);
 		//todo:
-	}
+	}*/
 }
 
 float Vehicle::acc_movingInLane(Simulator* sim){

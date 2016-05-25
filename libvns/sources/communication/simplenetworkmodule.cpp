@@ -19,7 +19,7 @@ namespace vns {
 SimpleNetwork::SimpleNetwork(){
 	onBoardUnits = new vns::HashTable<uint64, Vehicle*>(10000);
 	scheduler = new CalendarScheduler(0.05,1000);
-	communicationRange = 250;
+	communicationRange = 750;
 }
 
 SimpleNetwork::~SimpleNetwork(){

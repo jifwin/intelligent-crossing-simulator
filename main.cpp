@@ -11,8 +11,8 @@ int main(int argc, char* argv[]) {
 	bool gui = true;
 
 	vns::ManhattanMap man(1,1);
-	man.setNumberOfForwardLanes(2);
-	man.setNumberOfBackwardLanes(2);
+	man.setNumberOfForwardLanes(1);
+	man.setNumberOfBackwardLanes(1);
 	man.setRoadLength(500);
 
     	vns::RoadNetwork* network = man.createRoadNetwork();

@@ -53,6 +53,9 @@ public:
 
 protected:
 
+    int numberOfVehicles;
+    int numberOfCreatedVehicles;
+
     static Simulator* instance;
     unsigned int randomSeed;
     unsigned int seed;

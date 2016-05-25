@@ -120,8 +120,15 @@ private:
 
 public:
 
+
+	float distanceTmp;
+	std::string mode;
+
 	Vehicle(uint64 id, VehicleType type, VehicleModel model, const Path::Iterator& path, float width, float length, DriverModel* driver);
     virtual ~Vehicle();
+
+	float alternativeAccelToGreen(Simulator* sim, float distance, float time);
+	float accelToGreen(float distance, float timeToRed);
 
     inline uint64 getID() const { return id; };
     inline VehicleModel getVehicleModel() const { return vehicleModel; };
@@ -129,6 +136,7 @@ public:
     inline float getSpeed() const { return speed; };
     inline float getAccel() const { return accel; };
 	void calculateFuelConsumption();
+	float calculateFinalSmartSpeed(float distance, float timeToChange, float timeToSmartStop);
 	float getFuelConsumption() const;
 	float getTotalFuelConsumption() const;
     inline void setUserData(void* data){ userdata = data; };
@@ -234,6 +242,8 @@ private:
     float getAccelToEnd() const;
     float getAccelToCross() const;
     float accelToJunction(Simulator* sim,Junction* junction);
+
+	int countSteps;
 
     vns::Lane* considerLaneChanges(Simulator* simulator);
     float facilitateLaneChanges();
