@@ -267,8 +267,8 @@ void Simulator::stop() {
 }
 
 void Simulator::onSimulationStart(){
-//	numberOfVehicles = 50;
-//	numberOfCreatedVehicles = 0;
+	numberOfVehicles = 400;
+	numberOfCreatedVehicles = 0;
 
     int32 nr = network->getNumberOfRoads();
     for(int32 i=0;i<nr;i++){
@@ -387,7 +387,7 @@ Vehicle* Simulator::createVehicle(VehicleType vehicleType, const DriverInfo* dri
     	Vehicle* vehicle = vehicleFactory->newVehicle(vid,vehicleType,driver,it);
 
 
-    	if( vehicle /*&& numberOfCreatedVehicles < numberOfVehicles*/){ //todo: dirty,u gly hack
+    	if( vehicle && numberOfCreatedVehicles < numberOfVehicles){ //todo: dirty,u gly hack
 			numberOfCreatedVehicles++;
 			road->nextVehicleID++;
         	road->addVehicleToQueue(way,vehicle);

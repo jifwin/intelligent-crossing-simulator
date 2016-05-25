@@ -10,9 +10,9 @@ int main(int argc, char* argv[]) {
 
 	bool gui = true;
 
-	vns::ManhattanMap man(1,1);
-	man.setNumberOfForwardLanes(1);
-	man.setNumberOfBackwardLanes(1);
+	vns::ManhattanMap man(5,5);
+	man.setNumberOfForwardLanes(4);
+	man.setNumberOfBackwardLanes(4);
 	man.setRoadLength(500);
 
     	vns::RoadNetwork* network = man.createRoadNetwork();

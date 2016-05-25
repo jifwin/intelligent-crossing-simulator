@@ -395,7 +395,7 @@ void Vehicle::changingLane(Simulator* sim) {
         sim->removeObjectFromLane(ghost);
         state = Vehicle::MovingInLane;
 		stateFunction = &Vehicle::movingInLane;
-		accelFunction = &Vehicle::acc_movingInLane; //todo: check
+		accelFunction = &Vehicle::acc_movingInLaneSmart; //todo: check
 		checkFunction = &Vehicle::check_movingInLane;
 		//movingInLane( sim );
     }
@@ -411,7 +411,7 @@ void Vehicle::stoppedInLane(Simulator* sim){
 
         state = Vehicle::MovingInLane;
         stateFunction = &Vehicle::movingInLane;
-        accelFunction = &Vehicle::acc_movingInLane;
+        accelFunction = &Vehicle::acc_movingInLaneSmart;
         checkFunction = &Vehicle::check_movingInLane;
         //movingInLane(sim);
 	}
@@ -428,7 +428,7 @@ void Vehicle::movingInJunction(Simulator*) {
         usingTrajectory = false;
         state = Vehicle::MovingInLane;
 		stateFunction = &Vehicle::movingInLane;
-        accelFunction = &Vehicle::acc_movingInLane;
+        accelFunction = &Vehicle::acc_movingInLaneSmart;
         checkFunction = &Vehicle::check_movingInLane;
 		//movingInLane( sim );
     }
@@ -440,7 +440,7 @@ void Vehicle::changingWay(Simulator* sim) {
         sim->removeObjectFromLane(ghost);
         state = Vehicle::MovingInLane;
 		stateFunction = &Vehicle::movingInLane;
-		accelFunction = &Vehicle::acc_movingInLane;
+		accelFunction = &Vehicle::acc_movingInLaneSmart;
 		checkFunction = &Vehicle::check_movingInLane;
 		//movingInLane( sim );
     }
@@ -547,6 +547,11 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 
 		if(gapTo(next) < 5) {//todo: check: REFACTOR
 			mode = "moving to car";
+
+//			(next->getSpeed()-speed)/
+//			speed = next->getSpeed();
+//			return 0;
+
 			return model->accel(this, next);
 		}
 	}
@@ -568,7 +573,8 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 				}
 				else {
 					mode = "accel to junction else";
-					return accelToJunction(sim, junction);
+					return 3; //todo
+//					return accelToJunction(sim, junction);
 				}
 			}
 		}
@@ -590,7 +596,7 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 		else {
 			mode = "normalne zwalnianie do zielonego" + float_to_string(timeToGreen);
 			float acc = accelToGreen(distanceToJunction, timeToGreen);
-			if(true || speed+acc*timeToGreen < 0) { //todo: zmienilismy!
+			if(speed+acc*timeToGreen < 0) { //todo: zmienilismy!
 				mode = "alternatywne zwalnianie do zielonego" + float_to_string(timeToGreen);
 				float alternativeAcc = alternativeAccelToGreen(sim, distanceToJunction, timeToGreen);
 				return alternativeAcc;
@@ -611,7 +617,7 @@ float Vehicle::acc_movingInLaneSmart(Simulator *sim) {
 			if(acc>5 || speed+acc*(timeToRed) > 20 ) { //todo: zastanowic sie
 				float accToNextGreen = accelToGreen(distanceToJunction, timeToGreen);
 				mode = "nastepne normalnie" + float_to_string(timeToGreen);
-				if(true || speed+accToNextGreen*timeToGreen < 0) { //todo: zmienilismy!
+				if(speed+accToNextGreen*timeToGreen < 0) { //todo: zmienilismy!
 					float alternativeAcc = alternativeAccelToGreen(sim, distanceToJunction, timeToGreen);
 					mode = "nastepne alternative" + float_to_string(timeToGreen);
 					return alternativeAcc;
